@@ -33,6 +33,14 @@
             margin-right: 10px;
         }
 
+        div[id="checks"] {
+            padding: 10px;
+            width: 300px;
+            border-radius: 4px;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+
         button[type="submit"] {
             background-color: #0078d4;
             color: white;
@@ -50,9 +58,27 @@
 </head>
 <body>
 <h1>MovieWeb</h1>
-<form action="/buscar" method="GET">
+<form action="/buscar" method="GET" onsubmit="return validateSearch()">
     <input type="text" name="q" placeholder="Buscar películas..." />
     <button type="submit">Buscar</button>
+    <div id="checks">
+        <input type="checkbox" id="movie" name="filter" value="movie" checked />
+        <label for="movie">Película</label>
+        <input type="checkbox" id="actor" name="filter" value="actor" checked />
+        <label for="actor">Actor</label>
+        <input type="checkbox" id="director" name="filter" value="director" checked />
+        <label for="director">Director</label>
+    </div>
 </form>
+<script>
+    function validateSearch() {
+        const checkboxes = document.querySelectorAll('input[name="filter"]:checked');
+        if (checkboxes.length === 0) {
+            alert("Debe seleccionar al menos un filtro");
+            return false;
+        }
+        return true;
+    }
+</script>
 </body>
 </html>
