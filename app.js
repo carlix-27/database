@@ -10,10 +10,25 @@ app.use(express.static('views'));
 
 // Path completo de la base de datos movies.db
 // Por ejemplo 'C:\\Users\\datagrip\\movies.db'
-const db = new sqlite3.Database('./movies.db');
+const db = new sqlite3.Database('C:\\db-sqlite\\movies.db');
 
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
+
+// TODO: Tabla generica de usuarios en el codigo, para que cada uno lo tenga?
+app.post('/create-user', (req, res) => {
+    const query = `
+        
+    
+    `;
+
+})
+
+// app.put('/edit-user', ())
+
+// app.delete('/delete-user', ())
+
+// app.post('/movies-user', ()) // TODO: Esta implementacion guarda las peliculas que les gustan al usuario. Crea la tabla movie_user.
 
 // Ruta para la página de inicio
 app.get('/', (req, res) => {
