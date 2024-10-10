@@ -31,7 +31,16 @@ app.post('/create-user', (req, res) => {
 
 // app.delete('/delete-user', ())
 
-// app.post('/movies-user', ()) // TODO: Esta implementacion guarda las peliculas que les gustan al usuario. Crea la tabla movie_user.
+// fixme: tiene sentido hacerlo como lo estoy haciendo? es decir con declaracion de endpoint?
+// fixme: el constraint no se usa con sqlite.
+app.post('/movies-user', (req, res) => {
+    const query = `
+        create table movies_user ( 
+            foreign key (user_id) references user (user_id),
+            foreign key (movie_id) references movies (movie_id)
+        );
+    `;
+}) // TODO: Esta implementacion guarda las peliculas que les gustan al usuario. Crea la tabla movie_user.
 
 // Ruta para la página de inicio
 app.get('/', (req, res) => {
