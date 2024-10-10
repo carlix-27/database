@@ -18,12 +18,13 @@ app.set('view engine', 'ejs');
 // TODO: Tabla generica de usuarios en el codigo, para que cada uno lo tenga?
 app.post('/create-user', (req, res) => {
     const query = `
-        
-    
-        
-    
+        create table user (
+            user_id: integer primary key ,
+            user_username: string not null,
+            user_name: string not null,
+            user_email: string not null,    
+        )
     `;
-
 })
 
 // app.put('/edit-user', ())
