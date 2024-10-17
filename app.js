@@ -20,24 +20,57 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
-// Ruta para buscar películas
+// Ruta para buscar películas, actores y directores
 app.get('/buscar', (req, res) => {
     const searchTerm = req.query.q;
 
-    // Realizar la búsqueda en la base de datos
-    db.all(
-        'SELECT * FROM movie WHERE title LIKE ?',
-        [`%${searchTerm}%`],
-        (err, rows) => {
-            if (err) {
-                console.error(err);
-                res.status(500).send('Error en la búsqueda.');
-            } else {
-                res.render('resultado', { movies: rows });
-            }
+    // Realizar la búsqueda de películas
+    const moviesQuery = `
+        SELECT * FROM movie WHERE title LIKE ?
+    `;
+
+    // Realizar la búsqueda de actores
+    const actorsQuery = `
+        SELECT person_name
+        FROM person
+        WHERE person_name LIKE ?
+    `;
+
+    // Realizar la búsqueda de directores
+    const directorsQuery = `
+        SELECT person.* FROM person
+        INNER JOIN movie_crew ON person.person_id = movie_crew.person_id
+        WHERE movie_crew.job = 'Director' AND person.person_name LIKE ?
+    `;
+
+    // Ejecutar ambas consultas
+    db.all(moviesQuery, [`%${searchTerm}%`], (errMovies, movies) => {
+        if (errMovies) {
+            console.error(errMovies);
+            return res.status(500).send('Error en la búsqueda de películas.');
         }
-    );
+
+        db.all(actorsQuery, [`%${searchTerm}%`], (errActors, actors) => {
+            if (errActors) {
+                console.error(errActors);
+                return res.status(500).send('Error en la búsqueda de actores.');
+            }
+
+            db.all(directorsQuery, [`%${searchTerm}%`], (errDirectors, directors) => {
+                if (errDirectors) {
+                    console.error(errDirectors);
+                    return res.status(500).send('Error en la búsqueda de directores.');
+                }
+
+                console.log('')
+
+                // Renderizar la plantilla de resultados con películas, actores y directores
+                res.render('resultado', { movies, actors, directors });
+            });
+        });
+    });
 });
+
 
 // Ruta para la página de datos de una película particular
 app.get('/pelicula/:id', (req, res) => {
