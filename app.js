@@ -15,32 +15,12 @@ const db = new sqlite3.Database('C:\\db-sqlite\\movies.db');
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
 
-// TODO: Tabla generica de usuarios en el codigo, para que cada uno lo tenga?
-app.post('/create-user', (req, res) => {
-    const query = `
-        create table user (
-            user_id: integer primary key ,
-            user_username: string not null,
-            user_name: string not null,
-            user_email: string not null,    
-        )
-    `;
-})
 
 // app.put('/edit-user', ())
 
 // app.delete('/delete-user', ())
 
-// fixme: tiene sentido hacerlo como lo estoy haciendo? es decir con declaracion de endpoint?
-// fixme: el constraint no se usa con sqlite.
-app.post('/movies-user', (req, res) => {
-    const query = `
-        create table movies_user ( 
-            foreign key (user_id) references user (user_id),
-            foreign key (movie_id) references movies (movie_id)
-        );
-    `;
-}) // TODO: Esta implementacion guarda las peliculas que les gustan al usuario. Crea la tabla movie_user.
+
 
 // Ruta para la página de inicio
 app.get('/', (req, res) => {
@@ -51,19 +31,52 @@ app.get('/', (req, res) => {
 app.get('/buscar', (req, res) => {
     const searchTerm = req.query.q;
 
-    // Realizar la búsqueda en la base de datos
-    db.all(
-        'SELECT * FROM movie WHERE title LIKE ?',
-        [`%${searchTerm}%`],
-        (err, rows) => {
-            if (err) {
-                console.error(err);
-                res.status(500).send('Error en la búsqueda.');
-            } else {
-                res.render('resultado', { movies: rows });
-            }
+    // Realizar la busqueda de peliculas
+    const moviesQuery = `
+        SELECT * FROM movie WHERE title LIKE ?
+    `;
+
+    // Realizar la busqueda de directores
+    const actorsQuery = `
+        SELECT person_name
+        FROM person
+        WHERE person_name LIKE ?
+    `;
+
+    // Realizar la búsqueda de directores
+    const directorsQuery = `
+        SELECT DISTINCT person.person_id AS person_id, person.person_name AS person_name
+        FROM person
+        INNER JOIN main.movie_crew ON person.person_id = movie_crew.person_id
+        WHERE movie_crew.job = 'Director' and person_name LIKE ?
+    `;
+
+
+    // Ejecutar las consultas
+
+    db.all(moviesQuery, [`%${searchTerm}%`], (errMovies, movies) => {
+        if (errMovies) {
+            console.error(errMovies);
+            return res.status(500).send('Error en la búsqueda de películas.');
         }
-    );
+
+        db.all(actorsQuery, [`%${searchTerm}%`], (errActors, actors) => {
+            if (errActors) {
+                console.error(errActors);
+                return res.status(500).send('Error en la búsqueda de actores.');
+            }
+
+            db.all(directorsQuery, [`%${searchTerm}%`], (errDirectors, directors) => {
+                if (errDirectors) {
+                    console.error(errDirectors);
+                    return res.status(500).send('Error en la búsqueda de directores.');
+                }
+
+                // Renderizar la plantilla de resultados con películas, actores y directores
+                res.render('resultado', { movies, actors, directors });
+            });
+        });
+    });
 });
 
 // Ruta para la página de datos de una película particular
