@@ -22,14 +22,15 @@
 <!-- Actors Section -->
 <h2>Actores</h2>
 <% if (actors.length === 0) { %>
-    <p>No se encontraron actores.</p>
-<% } else { %>
-    <ul>
-        <% actors.forEach((actor) => { %>
-            <li><a href="/actor/<%= actor.person_id %>"><%= actor.title %></a></li>
-        <% }); %>
-    </ul>
+        <p>No se encontraron actores.</p>
+    <% } else { %>
+        <ul>
+            <% actors.forEach((actor) => { %>
+                <li><a href="/actor/<%= actor.person_id %>"><%= actor.person_name %></a></li>
+            <% }); %>
+        </ul>
 <% } %>
+
 
 <!-- Directors Section -->
 <h2>Directores</h2>
@@ -38,7 +39,7 @@
 <% } else { %>
     <ul>
         <% directors.forEach((director) => { %>
-            <li><a href="/director/<%= director.person_id %>"><%= director.name %></a></li>
+            <li><a href="/director/<%= director.person_id %>"><%= director.person_name %></a></li>
         <% }); %>
     </ul>
 <% } %>

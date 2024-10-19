@@ -29,28 +29,27 @@ app.get('/', (req, res) => {
 
 // Ruta para buscar películas
 app.get('/buscar', (req, res) => {
-    const searchTerm = req.query.q;
+    const searchTerm = req.query.q; // Name de la peli o lo que pongamos en el search.
+    const filterSearch = req.query.filter; // movie, actor, director - array de filters.
 
-    // Realizar la busqueda de peliculas
     const moviesQuery = `
-        SELECT * FROM movie WHERE title LIKE ?
-    `;
+            SELECT * 
+            FROM movie 
+            WHERE title LIKE ?
+        `;
 
-    // Realizar la busqueda de directores
     const actorsQuery = `
-        SELECT person_name
+        SELECT DISTINCT person.person_id AS person_id, person.person_name AS person_name
         FROM person
         WHERE person_name LIKE ?
     `;
 
-    // Realizar la búsqueda de directores
     const directorsQuery = `
-        SELECT DISTINCT person.person_id AS person_id, person.person_name AS person_name
-        FROM person
-        INNER JOIN main.movie_crew ON person.person_id = movie_crew.person_id
-        WHERE movie_crew.job = 'Director' and person_name LIKE ?
-    `;
-
+            SELECT DISTINCT person.person_id AS person_id, person.person_name AS person_name
+            FROM person
+            INNER JOIN main.movie_crew ON person.person_id = movie_crew.person_id
+            WHERE movie_crew.job = 'Director' and person_name LIKE ?
+        `;
 
     // Ejecutar las consultas
 
