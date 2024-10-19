@@ -15,33 +15,6 @@ const db = new sqlite3.Database('C:\\db-sqlite\\movies.db');
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
 
-// TODO: Tabla generica de usuarios en el codigo, para que cada uno lo tenga?
-app.post('/create-user', (req, res) => {
-    const query = `
-        create table user (
-            user_id: integer primary key ,
-            user_username: string not null,
-            user_name: string not null,
-            user_email: string not null,    
-        )
-    `;
-})
-
-// app.put('/edit-user', ())
-
-// app.delete('/delete-user', ())
-
-// fixme: tiene sentido hacerlo como lo estoy haciendo? es decir con declaracion de endpoint?
-// fixme: el constraint no se usa con sqlite.
-app.post('/movies-user', (req, res) => {
-    const query = `
-        create table movies_user ( 
-            foreign key (user_id) references user (user_id),
-            foreign key (movie_id) references movies (movie_id)
-        );
-    `;
-}) // TODO: Esta implementacion guarda las peliculas que les gustan al usuario. Crea la tabla movie_user.
-
 // Ruta para la página de inicio
 app.get('/', (req, res) => {
     res.render('index');
@@ -51,20 +24,52 @@ app.get('/', (req, res) => {
 app.get('/buscar', (req, res) => {
     const searchTerm = req.query.q;
 
+    const query = `
+        select *
+        from movie m
+        inner join movie_crew mc on m.movie_id = mc.movie_id
+        inner join person p on mc.person_id = p.person_id
+        where m.title like ? -- La pelicula se devuelve la que vos ingresas.
+        or (p.person_name like ? and (mc.job = 'Director' or mc.job = 'Character')); -- Si ingresa el nombre de una persona, busque tanto como director o character (actor) 
+    `
+
+
     // Realizar la búsqueda en la base de datos
     db.all(
-        'SELECT * FROM movie WHERE title LIKE ?',
-        [`%${searchTerm}%`],
+        query,
+        [`%${searchTerm}%`, `%${searchTerm}%`],
         (err, rows) => {
             if (err) {
                 console.error(err);
                 res.status(500).send('Error en la búsqueda.');
             } else {
-                res.render('resultado', { movies: rows });
+                // Separo los posibles resultados - Peliculas, actores y directores
+                const movies = [];
+                const actors = [];
+                const directors = [];
+
+                rows.forEach(row => {
+                    if (row.title) {
+                        // Agregar películas (solo una vez por título)
+                        if (!movies.some(movie => movie.movie_id === row.movie_id)) {
+                            movies.push({ movie_id: row.movie_id, title: row.title });
+                        }
+                    }
+                    if (row.job === 'Character') {
+                        actors.push(row);
+                    }
+                    if (row.job === 'Director') {
+                        directors.push(row);
+                    }
+                });
+
+
+                res.render('resultado', { movies, actors, directors});
             }
         }
     );
 });
+
 
 // Ruta para la página de datos de una película particular
 app.get('/pelicula/:id', (req, res) => {
