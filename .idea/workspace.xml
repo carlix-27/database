@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5fe7b14e-2d89-4686-9e7c-748f141bfd5c" name="Changes" comment="commiteo y borro" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="q9b9zmjj" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="2mclGCODUdB6byr8TdZh3SlRDGF" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Node.js.app.js.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.1.4\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "hsqldb",
+      "sqlite"
+    ]
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9f38398b9061-39b83d9b5494-intellij.indexing.shared.core-IU-241.18034.62" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-IU-241.18034.62" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5fe7b14e-2d89-4686-9e7c-748f141bfd5c" name="Changes" comment="" />
+      <created>1727383651722</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1727383651722</updated>
+      <workItem from="1727383653392" duration="547000" />
+      <workItem from="1727960117511" duration="1058000" />
+      <workItem from="1727974385865" duration="10000" />
+      <workItem from="1728432031015" duration="4439000" />
+      <workItem from="1728480437297" duration="166000" />
+      <workItem from="1728561245705" duration="9643000" />
+      <workItem from="1728578490567" duration="294000" />
+      <workItem from="1729171126461" duration="1844000" />
+      <workItem from="1729177102982" duration="1159000" />
+      <workItem from="1729182652966" duration="58000" />
+      <workItem from="1729186593820" duration="9660000" />
+      <workItem from="1729200226631" duration="21000" />
+      <workItem from="1729354976371" duration="1202000" />
+      <workItem from="1729356255750" duration="53000" />
+    </task>
+    <task id="LOCAL-00001" summary="Sqlite config">
+      <option name="closed" value="true" />
+      <created>1727960209954</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1727960209954</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Sqlite config">
+      <option name="closed" value="true" />
+      <created>1728432122654</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1728432122654</updated>
+    </task>
+    <task id="LOCAL-00003" summary="db test">
+      <option name="closed" value="true" />
+      <created>1728563314832</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1728563314832</updated>
+    </task>
+    <task id="LOCAL-00004" summary="db test">
+      <option name="closed" value="true" />
+      <created>1728564281011</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1728564281011</updated>
+    </task>
+    <task id="LOCAL-00005" summary="changes main">
+      <option name="closed" value="true" />
+      <created>1728564373743</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1728564373743</updated>
+    </task>
+    <task id="LOCAL-00006" summary="changes db test -&gt; express version 4.21.0">
+      <option name="closed" value="true" />
+      <created>1728564505143</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1728564505143</updated>
+    </task>
+    <task id="LOCAL-00007" summary="table user">
+      <option name="closed" value="true" />
+      <created>1728564737942</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1728564737942</updated>
+    </task>
+    <task id="LOCAL-00008" summary="query to create user table">
+      <option name="closed" value="true" />
+      <created>1728578770918</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1728578770919</updated>
+    </task>
+    <task id="LOCAL-00009" summary="commiteo y borro">
+      <option name="closed" value="true" />
+      <created>1729356199108</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1729356199108</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Sqlite config" />
+    <MESSAGE value="db test" />
+    <MESSAGE value="changes main" />
+    <MESSAGE value="changes db test -&gt; express version 4.21.0" />
+    <MESSAGE value="table user" />
+    <MESSAGE value="query to create user table" />
+    <MESSAGE value="commiteo y borro" />
+    <option name="LAST_COMMIT_MESSAGE" value="commiteo y borro" />
+  </component>
+</project>
