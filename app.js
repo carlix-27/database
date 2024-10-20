@@ -31,16 +31,20 @@ app.get('/buscar', (req, res) => {
 
     // Realizar la búsqueda de actores
     const actorsQuery = `
-        SELECT person_name
+        SELECT DISTINCT person.person_id AS person_id, person.person_name AS person_name
         FROM person
-        WHERE person_name LIKE ?
+        INNER JOIN main.movie_cast ON person.person_id = movie_cast.person_id
+            WHERE person_name LIKE ?
     `;
 
     // Realizar la búsqueda de directores
     const directorsQuery = `
-        SELECT person.* FROM person
-        INNER JOIN movie_crew ON person.person_id = movie_crew.person_id
-        WHERE movie_crew.job = 'Director' AND person.person_name LIKE ?
+        SELECT DISTINCT person.person_id AS person_id, person.person_name AS person_name
+        FROM person
+        INNER JOIN main.movie_crew ON person.person_id = movie_crew.person_id
+        WHERE movie_crew.job = 'Director' and person_name LIKE ?
+
+
     `;
 
     // Ejecutar ambas consultas
