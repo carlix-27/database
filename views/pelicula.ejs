@@ -1,46 +1,136 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title><%= movie.title %></title>
-    <link rel="stylesheet" href="/styles.css">
+    <title>
+        <%= movie.title %>
+    </title>
+    <link rel="stylesheet" href="/pelicula.css">
 </head>
+
 <body>
-<h1><%= movie.title %></h1>
-<h3>Fecha: <%= movie.release_date %></h3>
-<h3>Dirigida por: </h3>
-<ul>
-    <% movie.directors.forEach((director) => { %>
-        <li>
-            <a href="/director/<%= director.crew_member_id %>"><%= director.crew_member_name %></a>
-        </li>
-    <% }); %>
-</ul>
-<h3>Escrita por: </h3>
-<ul>
-    <% movie.writers.forEach((writer) => { %>
-        <li>
-            <%= writer.crew_member_name %>
-        </li>
-    <% }); %>
-</ul>
-<h3>Argumento:</h3>
-<div id="overview"><p><%= movie.overview %></p></div>
-<h3>Elenco:</h3>
-<ul>
-    <% movie.cast.sort((a, b) => a.cast_order - b.cast_order).forEach((actor) => { %>
-        <li><a href="/actor/<%= actor.actor_id %>"><%= actor.actor_name %></a> - <%= actor.character_name %></li>
-    <% }); %>
-</ul>
-<h3>Crew:</h3>
-<ul>
-    <% movie.crew.forEach((crewMember) => { %>
-        <li>
-            <%= crewMember.crew_member_name %> - <%= crewMember.department_name %>
-            (<%= crewMember.job %>)
-        </li>
-    <% }); %>
-</ul>
-<p></p>
-<div id="inicio"><a href="/">Inicio</a></div>
+    <div id="short_data"
+        style="margin-bottom: 30px; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-evenly; text-align: center; width: 85%;">
+        <h1>
+            <%= movie.title %>
+        </h1>
+        <h3 style="width: 30%; order: 1;">Dirigida por</h3>
+        <ul style="width: 30%; order: 2;">
+            <% movie.directors.forEach((director)=> { %>
+                <li>
+                    <a href="/director/<%= director.crew_member_id %>">
+                        <%= director.crew_member_name %>
+                    </a>
+                </li>
+            <% }); %>
+        </ul>
+        <h3 style="width: 30%; order: 1;">
+            Fecha
+        </h3>
+        <ul style=" width: 30%; order: 2;">
+            <li>
+                <%= movie.release_date %>
+            </li>
+        </ul>
+        <h3 style="width: 30%; order: 1;">
+            Puntuación
+        </h3>
+        <ul style=" width: 30%; order: 2">
+            <li>
+                <%= movie.vote %>
+            </li>
+        </ul>
+        <h3 style="width: 30%; order: 3;">Escrita por</h3>
+        <ul style="width: 30%; order: 4;">
+            <% movie.writers.forEach((writer)=> { %>
+                <li>
+                    <%= writer.crew_member_name %>
+                </li>
+                <% }); %>
+        </ul>
+        <h3 style="width: 30%; order: 3;">
+            Idioma
+        </h3>
+        <ul style=" width: 30%; order: 4;">
+            <li>
+                <%= movie.language %>
+            </li>
+        </ul>
+        <h3 style="width: 30%; order: 3;">
+            Duración
+        </h3>
+        <ul style=" width: 30%; order: 4">
+            <li>
+                <%= movie.runtime %> minutos
+            </li>
+        </ul>
+        <h3 style="width: 30%; order: 5;">
+            Productora
+        </h3>
+        <ul style=" width: 30%; order: 6">
+            <li>
+                <%= movie.company %>
+            </li>
+        </ul>
+        <h3 style="width: 30%; order: 5;">
+            País
+        </h3>
+        <ul style=" width: 30%; order: 6">
+            <li>
+                <%= movie.country %>
+            </li>
+        </ul>
+        <h3 style="width: 30%; order: 5;">
+            Género
+        </h3>
+        <ul style="width: 30%; order: 6;">
+            <% movie.genre.forEach((genre)=> { %>
+                <li style="text-align: center;">
+                    <%= genre.genre_name %>  %>
+                </li>
+                <% }); %>
+        </ul>
+    </div>
+    <h3>Argumento</h3>
+    <div id="overview">
+        <p style="text-align: justify;">
+            <%= movie.overview %>
+        </p>
+    </div>
+    <div id="cast_crew"
+        style="width: 85%;display: flex; flex-wrap: wrap; justify-content: space-evenly; text-align: center; margin: 30px 0;">
+        <h3 style="width: 40%;">Elenco</h3>
+        <h3 style="width: 40%;">Crew</h3>
+        <ul style="width: 40%;">
+            <% movie.cast.sort((a, b)=> a.cast_order - b.cast_order).forEach((actor) => { %>
+                <li style="text-align: center;"><a href="/actor/<%= actor.actor_id %>">
+                        <%= actor.actor_name %>
+                    </a> - <%= actor.character_name %>
+                </li>
+                <% }); %>
+        </ul>
+        <ul style="width: 40%;">
+            <% movie.crew.forEach((crewMember)=> { %>
+                <li style="text-align: center;">
+                    <%= crewMember.crew_member_name %> - <%= crewMember.department_name %>
+                            (<%= crewMember.job %>)
+                </li>
+                <% }); %>
+        </ul>
+    </div>
+    <div style="width: 85%;">
+        <h3>Palabras clave</h3>
+        <p>
+            <% movie.keyword.forEach((keyword, index) => { %>
+                <%= keyword.keyword_name %>
+                <% if (index < movie.keyword.length - 1) { %>
+                    -
+                <% } %>
+            <% }) %>
+        </p>
+    </div>
+    <p></p>
+    <div id="inicio"><a href="/">Inicio</a></div>
 </body>
+
 </html>
