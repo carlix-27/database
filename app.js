@@ -324,6 +324,40 @@ app.get('/director/:id', (req, res) => {
 });
 
 
+//creacion de usuario
+app.get('/new-user',(req,res) => {
+
+
+    const createUserTable = `
+    CREATE TABLE IF NOT EXISTS user (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        name TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+        )
+    `;
+
+    db.all(createUserTable, function (err) {
+        if (err) {
+            return console.error('Error creando la tabla:', err.message);
+        }
+        console.log('Tabla creada correctamente');
+    });
+
+    
+
+
+
+
+    res.render('user');
+    const user = req.query.q;
+    
+
+});
+
+
+
 // Iniciar el servidor
 app.listen(port, () => {
     console.log(`Servidor en ejecución en http://localhost:${port}`);
