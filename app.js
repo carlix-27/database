@@ -39,6 +39,32 @@ app.get('/buscar', (req, res) => {
     );
 });
 
+// Ruta para buscar películas por keywords
+app.get('/key-search', (req, res) => {
+    const searchTerm = req.query.q;
+
+    const keywords_query = `
+        SELECT 
+            movie.*, 
+            keyword.keyword_name
+        FROM movie
+        LEFT JOIN movie_keywords ON movie.movie_id = movie_keywords.movie_id
+        LEFT JOIN keyword ON movie_keywords.keyword_id = keyword.keyword_id
+        WHERE keyword.keyword_name LIKE ?;
+    `;
+
+    // Realizar la búsqueda en la base de datos
+    db.all(keywords_query, [`%${searchTerm}%`], (err, rows) => {
+            if (err) {
+                console.error(err);
+                res.status(500).send('Error en la búsqueda.');
+            } else {
+                res.render('keywords', { movies: rows });
+            }
+        }
+    );
+});
+
 // Ruta para la página de datos de una película particular
 app.get('/pelicula/:id', async (req, res) => {
     const movieId = req.params.id;
