@@ -8,6 +8,8 @@ const port = process.env.PORT || 3000;
 // Serve static files from the "views" directory
 app.use(express.static('views'));
 
+app.use(express.urlencoded({ extended: true }));
+
 // Path completo de la base de datos movies.db
 // Por ejemplo 'C:\\Users\\datagrip\\movies.db'
 const db = new sqlite3.Database('./movies.db');
@@ -335,7 +337,7 @@ app.post('/new-user',(req,res) =>{
     
     console.log(req.body);
     const name = req.body.user;
-    req.send('User: ${name}');
+    res.send(`User: ${name}`);
     
 });
 
