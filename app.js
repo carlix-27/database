@@ -336,7 +336,7 @@ app.get('/sign-up',(req,res) => {
 app.post('/new-user',(req,res) =>{ 
     
     const checkUserQuery = 'select * FROM user where username = ?'
-    const query = 'INSERT INTO movies (username, name, email, password) VALUES (?, ?, ?, ?)' 
+    const query = 'INSERT INTO user (username, name, email, password) VALUES (?, ?, ?, ?)' 
 
     console.log(req.body);
     const name = req.body.name;
