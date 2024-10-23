@@ -335,10 +335,47 @@ app.get('/sign-up',(req,res) => {
 
 app.post('/new-user',(req,res) =>{ 
     
+    const checkUserQuery = 'select * FROM user where username = ?'
+    const query = 'INSERT INTO movies (username, name, email, password) VALUES (?, ?, ?, ?)' 
+
     console.log(req.body);
-    const name = req.body.user;
-    res.send(`User: ${name}`);
-    
+    const name = req.body.name;
+    const email = req.body.email;
+    const user = req.body.user;
+    const pass = req.body.password;
+    const passConfirm = req.body.passwordConfirmation;
+
+    //confirmar que los campos esten completos y que las contraseñas sean iguales
+
+
+    if(name.length != 0 && email.length != 0 && user.length != 0  && pass != 0){
+        if(passConfirm != pass){
+            res.status(400).send('Las contraseñas no son identicas.')
+        }else{
+            db.get(checkUserQuery,[user],(err,username) => {//checkear que el usuario no exista
+                if(err){
+                    res.status(500).send('Error al verificar el usuario.');
+                }else if (!username){
+                    db.run(query,[user,name,email,pass], (err) => {
+
+                        if(err){
+                            res.status(500).send('Error en la creacion de usuario.');
+                        }else{
+                            res.status(200).send('Usuario creado correctamente')
+                        }
+        
+        
+                    });
+
+                }else{
+                    res.status(409).send('Usuario ya existe.');
+                }
+            })
+
+        }
+    }else{
+        res.status(400).send('Campos vacios')
+    }
 });
 
 
