@@ -10,10 +10,17 @@ app.use(express.static('views'));
 
 // Path completo de la base de datos movies.db
 // Por ejemplo 'C:\\Users\\datagrip\\movies.db'
-const db = new sqlite3.Database('./movies.db');
+const db = new sqlite3.Database('C:\\db-sqlite\\movies.db');
 
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
+
+
+// app.put('/edit-user', ())
+
+// app.delete('/delete-user', ())
+
+
 
 // Ruta para la página de inicio
 app.get('/', (req, res) => {
@@ -22,21 +29,53 @@ app.get('/', (req, res) => {
 
 // Ruta para buscar películas
 app.get('/buscar', (req, res) => {
-    const searchTerm = req.query.q;
+    const searchTerm = req.query.q; // Name de la peli o lo que pongamos en el search.
+    const filterSearch = req.query.filter; // movie, actor, director - array de filters.
 
-    // Realizar la búsqueda en la base de datos
-    db.all(
-        'SELECT * FROM movie WHERE title LIKE ?',
-        [`%${searchTerm}%`],
-        (err, rows) => {
-            if (err) {
-                console.error(err);
-                res.status(500).send('Error en la búsqueda.');
-            } else {
-                res.render('resultado', { movies: rows });
-            }
+    const moviesQuery = `
+            SELECT * 
+            FROM movie 
+            WHERE title LIKE ?
+        `;
+
+    const actorsQuery = `
+        SELECT DISTINCT person.person_id AS person_id, person.person_name AS person_name
+        FROM person
+        WHERE person_name LIKE ?
+    `;
+
+    const directorsQuery = `
+            SELECT DISTINCT person.person_id AS person_id, person.person_name AS person_name
+            FROM person
+            INNER JOIN main.movie_crew ON person.person_id = movie_crew.person_id
+            WHERE movie_crew.job = 'Director' and person_name LIKE ?
+        `;
+
+    // Ejecutar las consultas
+
+    db.all(moviesQuery, [`%${searchTerm}%`], (errMovies, movies) => {
+        if (errMovies) {
+            console.error(errMovies);
+            return res.status(500).send('Error en la búsqueda de películas.');
         }
-    );
+
+        db.all(actorsQuery, [`%${searchTerm}%`], (errActors, actors) => {
+            if (errActors) {
+                console.error(errActors);
+                return res.status(500).send('Error en la búsqueda de actores.');
+            }
+
+            db.all(directorsQuery, [`%${searchTerm}%`], (errDirectors, directors) => {
+                if (errDirectors) {
+                    console.error(errDirectors);
+                    return res.status(500).send('Error en la búsqueda de directores.');
+                }
+
+                // Renderizar la plantilla de resultados con películas, actores y directores
+                res.render('resultado', { movies, actors, directors });
+            });
+        });
+    });
 });
 
 // Ruta para la página de datos de una película particular
