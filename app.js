@@ -400,13 +400,13 @@ app.post('/login',(req,res) =>{
     const user = req.body.user; 
     const pass = req.body.password;
 
-    db.get(userQuery,[user],(err,username,password)=>{    
+    db.get(userQuery,[user],(err,row)=>{    
 
         if(err){
             res.status(500).send('Error al verificar el usuario.');
-        }else if(!username){
+        }else if(!row){
             res.status(400).send('Usuario no existe');
-        }else if(pass === username.password ){
+        }else if(pass === row.password ){
             res.status(200).send('Login correcto.')
         }else{
             res.status(400).send('Contraseña incorrecta.')
