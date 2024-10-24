@@ -329,16 +329,16 @@ app.get('/director/:id', (req, res) => {
 //creacion de usuario
 app.get('/sign-up',(req,res) => {
 
-    res.render('newUser')
+    res.render('newUser');
 
 });
 
 app.post('/new-user',(req,res) =>{ 
     
-    const checkUserQuery = 'select * FROM user where username = ?'
-    const checkMailQuery = 'select * FROM user where email = ?'
+    const checkUserQuery = 'select * FROM user where username = ?';
+    const checkMailQuery = 'select * FROM user where email = ?';
 
-    const query = 'INSERT INTO user (username, name, email, password) VALUES (?, ?, ?, ?)' 
+    const query = 'INSERT INTO user (username, name, email, password) VALUES (?, ?, ?, ?)';
 
     console.log(req.body);
     const name = req.body.name;
@@ -352,7 +352,7 @@ app.post('/new-user',(req,res) =>{
 
     if(name.length != 0 && mail.length != 0 && user.length != 0  && pass != 0){
         if(passConfirm != pass){
-            res.status(400).send('Las contraseñas no son identicas.')
+            res.status(400).send('Las contraseñas no son identicas.');
         }else{
             db.get(checkUserQuery,[user],(err,username) => {//checkear que el usuario no exista
                 if(err){
@@ -369,7 +369,7 @@ app.post('/new-user',(req,res) =>{
                                 if(err){
                                     res.status(500).send('Error en la creacion de usuario.');
                                 }else{
-                                    res.status(200).send('Usuario creado correctamente')
+                                    res.status(200).send('Usuario creado correctamente');
                                 }
                             });
                         }else{
@@ -382,8 +382,37 @@ app.post('/new-user',(req,res) =>{
             })
         }
     }else{
-        res.status(400).send('Campos vacios')
+        res.status(400).send('Campos vacios');
     }
+});
+
+app.get('/sign-in',(req,res) => {
+
+    res.render('login');
+
+});
+
+//verificar la existencia del usuario y si su contraseña es valida
+app.post('/login',(req,res) =>{
+
+    const userQuery = 'select * FROM user where username = ?';
+
+    const user = req.body.user; 
+    const pass = req.body.password;
+
+    db.get(userQuery,[user],(err,username,password)=>{    
+
+        if(err){
+            res.status(500).send('Error al verificar el usuario.');
+        }else if(!username){
+            res.status(400).send('Usuario no existe');
+        }else if(pass === username.password ){
+            res.status(200).send('Login correcto.')
+        }else{
+            res.status(400).send('Contraseña incorrecta.')
+        };
+
+    });     
 });
 
 
