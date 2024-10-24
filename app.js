@@ -1,6 +1,7 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
 const ejs = require('ejs');
+const session = require('express-session');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -13,6 +14,14 @@ app.use(express.urlencoded({ extended: true }));
 // Path completo de la base de datos movies.db
 // Por ejemplo 'C:\\Users\\datagrip\\movies.db'
 const db = new sqlite3.Database('./movies.db');
+
+//configuro las sessions
+app.use(session({
+    secret: 'valen se la come',
+    resave: false,
+    saveUninitialized: true
+}));
+
 
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
@@ -364,12 +373,12 @@ app.post('/new-user',(req,res) =>{
                         if(err){
                             res.status(500).send('Error al verificar el email.');
                         }else if (!email){
-                            db.run(query,[user,name,mail,pass], (err) => {
+                            db.run(query,[user,name,mail,pass], (err) => {//crea el usuario en la db y redirige al usuario al login
         
                                 if(err){
                                     res.status(500).send('Error en la creacion de usuario.');
                                 }else{
-                                    res.status(200).send('Usuario creado correctamente');
+                                    req.render('login');
                                 }
                             });
                         }else{
@@ -393,12 +402,13 @@ app.get('/sign-in',(req,res) => {
 });
 
 //verificar la existencia del usuario y si su contraseña es valida
-app.post('/login',(req,res) =>{
+app.post('/log-in',(req,res) =>{
 
     const userQuery = 'select * FROM user where username = ?';
 
     const user = req.body.user; 
     const pass = req.body.password;
+
 
     db.get(userQuery,[user],(err,row)=>{    
 
@@ -407,13 +417,23 @@ app.post('/login',(req,res) =>{
         }else if(!row){
             res.status(400).send('Usuario no existe');
         }else if(pass === row.password ){
-            res.status(200).send('Login correcto.')
+            req.session.user = row.username;//guarda el usuario
+            req.session.isLoggedIn = true;//guarda el loggin en la session
+            res.render('index');
         }else{
-            res.status(400).send('Contraseña incorrecta.')
+            res.status(400).send('Contraseña incorrecta.');
         };
-
     });     
 });
+
+//Cierra la sesion del usuario
+app.post('/log-out',(req,res) =>{
+        req.session.isLoggedIn = false;
+        res.render('index');
+
+});
+
+
 
 
 
