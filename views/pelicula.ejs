@@ -16,6 +16,11 @@
         </h1>
         <h3 style="width: 30%; order: 1;">Dirigida por</h3>
         <ul style="width: 30%; order: 2;">
+            <% if (movie.directors.length == 0) { %>
+                <li>
+                    No data
+                </li>
+            <% } %>
             <% movie.directors.forEach((director)=> { %>
                 <li>
                     <a href="/director/<%= director.crew_member_id %>">
@@ -28,6 +33,11 @@
             Fecha
         </h3>
         <ul style=" width: 30%; order: 2;">
+            <% if (!movie.release_date) { %>
+                <li>
+                    No data
+                </li>
+            <% } %>
             <li>
                 <%= movie.release_date %>
             </li>
@@ -42,9 +52,14 @@
         </ul>
         <h3 style="width: 30%; order: 3;">Escrita por</h3>
         <ul style="width: 30%; order: 4;">
+            <% if (movie.writers.length == 0) { %>
+                <li>
+                    No data
+                </li>
+            <% } %>
             <% movie.writers.forEach((writer)=> { %>
                 <li>
-                    <%= writer.crew_member_name %>
+                    <%= writer.crew_member_name ? writer.crew_member_name : "No data"  %>
                 </li>
                 <% }); %>
         </ul>

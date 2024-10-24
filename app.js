@@ -10,7 +10,7 @@ app.use(express.static('views'));
 
 // Path completo de la base de datos movies.db
 // Por ejemplo 'C:\\Users\\datagrip\\movies.db'
-const db = new sqlite3.Database('C:\\db-sqlite\\movies.db');
+const db = new sqlite3.Database('./movies.db');
 
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
@@ -31,6 +31,11 @@ app.get('/', (req, res) => {
 app.get('/buscar', (req, res) => {
     const searchTerm = req.query.q; // Name de la peli o lo que pongamos en el search.
     const filterSearch = req.query.filter; // movie, actor, director - array de filters.
+
+    if(filterSearch){
+        res.redirect(`/buscar-keywords/${searchTerm}`);
+        return
+    }
 
     const moviesQuery = `
             SELECT * 
@@ -79,8 +84,8 @@ app.get('/buscar', (req, res) => {
 });
 
 // Ruta para buscar películas por keywords
-app.get('/key-search', (req, res) => {
-    const searchTerm = req.query.q;
+app.get('/buscar-keywords/:keyword', (req, res) => {
+    const searchTerm = req.params.keyword;
 
     const keywords_query = `
         SELECT 
