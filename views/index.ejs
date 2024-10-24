@@ -1,23 +1,70 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>MovieWeb</title>
     <style>
-        body {
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            font-family: 'Arial', sans-serif;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #0078d4;
+            height: 100px;
+            color: white;
+        }
+
+        #body {
             font-family: 'Arial', sans-serif;
             background-color: #f5f5f5;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            height: calc(100vh - 100px);
         }
 
-        h1 {
+        header > h1 {
+            font-size: 36px;
+            color: white;
+            margin: 0 30px;
+            align-self: center;
+            text-decoration: none;
+            /* Agregamos margen inferior para separar del input */
+        }
+
+        header > div > h3 {
+            color: white;
+            align-self: center;
+            text-decoration: none;
+            /* Agregamos margen inferior para separar del input */
+        }
+
+        header > h1 > a {
+            color: white;
+            text-decoration: none;
+            /* Agregamos margen inferior para separar del input */
+        }
+
+        header > div > h3 > a {
+            color: white;
+            text-decoration: none;
+            /* Agregamos margen inferior para separar del input */
+        }
+
+        body > h1 {
             font-size: 36px;
             color: #333333;
-            margin-bottom: 20px; /* Agregamos margen inferior para separar del input */
+            margin-bottom: 100px;
+            /* Agregamos margen inferior para separar del input */
         }
 
         form {
@@ -55,16 +102,28 @@
             background-color: #0056b3;
         }
     </style>
+    <script src="https://kit.fontawesome.com/2a8338fca4.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
-<h1>MovieWeb</h1>
-<form action="/buscar" method="GET" >
-    <input type="text" name="q" placeholder="Buscar películas..." required />
-    <button type="submit">Buscar</button>
-    <div id="checks">
-        <input type="checkbox" id="keyword" name="filter" value="keyword" />
-        <label for="keyword">Buscar por Keyword</label>
+    <header>
+        <h1><a href="/"><i class="fas fa-film" style="margin-right: 10px;"></i>MovieWeb</a></h1>
+        <div name="user" style="display: flex;align-self: space-around;">
+            <h3 style="margin-right: 30px; align-self: center;"><a href="/login">Registrarse</a></h3>
+            <h3 style="margin-right: 30px; align-self: center;"><a href="/sign-up">Ingresar</a></h3>
+        </div>
+    </header>
+    <div id="body">
+        <h1>MovieWeb</h1>
+        <form action="/buscar" method="GET">
+            <input type="text" name="q" placeholder="Buscar películas..." required />
+            <button type="submit">Buscar</button>
+            <div id="checks">
+                <input type="checkbox" id="keyword" name="filter" value="keyword" />
+                <label for="keyword">Buscar por Keyword</label>
+            </div>
+        </form>
     </div>
-</form>
 </body>
+
 </html>
