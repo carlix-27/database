@@ -1,6 +1,7 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
 const ejs = require('ejs');
+const session = require('express-session');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -8,9 +9,19 @@ const port = process.env.PORT || 3000;
 // Serve static files from the "views" directory
 app.use(express.static('views'));
 
+app.use(express.urlencoded({ extended: true }));
+
 // Path completo de la base de datos movies.db
 // Por ejemplo 'C:\\Users\\datagrip\\movies.db'
 const db = new sqlite3.Database('./movies.db');
+
+//configuro las sessions
+app.use(session({
+    secret: 'tp1',
+    resave: false,
+    saveUninitialized: true
+}));
+
 
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
@@ -392,6 +403,108 @@ app.get('/director/:id', (req, res) => {
         }
     });
 });
+
+
+//creacion de usuario
+app.get('/sign-up',(req,res) => {
+
+    res.render('newUser');
+
+});
+
+app.post('/new-user',(req,res) =>{ 
+    
+    const checkUserQuery = 'select * FROM user where username = ?';
+    const checkMailQuery = 'select * FROM user where email = ?';
+
+    const query = 'INSERT INTO user (username, name, email, password) VALUES (?, ?, ?, ?)';
+
+    console.log(req.body);
+    const name = req.body.name;
+    const mail = req.body.email;
+    const user = req.body.user;
+    const pass = req.body.password;
+    const passConfirm = req.body.passwordConfirmation;
+
+    //confirmar que los campos esten completos y que las contraseñas sean iguales
+
+
+    if(name.length != 0 && mail.length != 0 && user.length != 0  && pass != 0){
+        if(passConfirm != pass){
+            res.status(400).send('Las contraseñas no son identicas.');
+        }else{
+            db.get(checkUserQuery,[user],(err,username) => {//checkear que el usuario no exista
+                if(err){
+                    res.status(500).send('Error al verificar el usuario.');
+                }else if (!username){
+
+                    db.get(checkMailQuery,[mail],(err,email) => {//checkear que el mail no exista
+
+                        if(err){
+                            res.status(500).send('Error al verificar el email.');
+                        }else if (!email){
+                            db.run(query,[user,name,mail,pass], (err) => {//crea el usuario en la db y redirige al usuario al login
+        
+                                if(err){
+                                    res.status(500).send('Error en la creacion de usuario.');
+                                }else{
+                                    res.render('login');
+                                }
+                            });
+                        }else{
+                            res.status(409).send('Email ya esta utilizado.');
+                        }
+                    })
+                }else{
+                    res.status(409).send('Usuario ya existe.');
+                }
+            })
+        }
+    }else{
+        res.status(400).send('Campos vacios');
+    }
+});
+
+app.get('/sign-in',(req,res) => {
+
+    res.render('login');
+
+});
+
+//verificar la existencia del usuario y si su contraseña es valida
+app.post('/log-in',(req,res) =>{
+
+    const userQuery = 'select * FROM user where username = ?';
+
+    const user = req.body.user; 
+    const pass = req.body.password;
+
+
+    db.get(userQuery,[user],(err,row)=>{    
+
+        if(err){
+            res.status(500).send('Error al verificar el usuario.');
+        }else if(!row){
+            res.status(400).send('Usuario no existe');
+        }else if(pass === row.password ){
+            req.session.user = row.username;//guarda el usuario
+            req.session.isLoggedIn = true;//guarda el loggin en la session
+            res.render('index');
+        }else{
+            res.status(400).send('Contraseña incorrecta.');
+        };
+    });     
+});
+
+//Cierra la sesion del usuario
+app.post('/log-out',(req,res) =>{
+        req.session.isLoggedIn = false;
+        res.render('index');
+
+});
+
+
+
 
 
 // Iniciar el servidor
