@@ -17,7 +17,7 @@ const db = new sqlite3.Database('./movies.db');
 
 //configuro las sessions
 app.use(session({
-    secret: 'valen se la come',
+    secret: 'tp1',
     resave: false,
     saveUninitialized: true
 }));
@@ -378,7 +378,7 @@ app.post('/new-user',(req,res) =>{
                                 if(err){
                                     res.status(500).send('Error en la creacion de usuario.');
                                 }else{
-                                    req.render('login');
+                                    res.render('login');
                                 }
                             });
                         }else{
