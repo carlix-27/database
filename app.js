@@ -372,6 +372,21 @@ app.get('/actor/:id', (req, res) => {
     });
 });
 
+
+// Ruta para que el usuario pueda dejar un review
+app.post('/pelicula/:id/review', (req, res) =>{
+    const movieId = req.movie.id;
+    const userId = req.session.user;
+
+    console.log('Movie id',movieId);
+    console.log('User id', userId);
+
+    console.log('Req-body', req.body);
+    // Consulta SQL para agregar una review
+
+    const reviewQuery = `INSERT INTO movie_review (movie_id, user_id, review, rating) VALUES (?, ?, ?, ?)`;
+});
+
 // Ruta para mostrar la página de un director específico
 app.get('/director/:id', (req, res) => {
     const directorId = req.params.id;
