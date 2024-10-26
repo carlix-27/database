@@ -108,10 +108,17 @@
 <body>
     <header>
         <h1><a href="/"><i class="fas fa-film" style="margin-right: 10px;"></i>MovieWeb</a></h1>
-        <div name="user" style="display: flex;align-self: space-around;">
-            <h3 style="margin-right: 30px; align-self: center;"><a href="/sign-up">Registrarse</a></h3>
-            <h3 style="margin-right: 30px; align-self: center;"><a href="/sign-in">Ingresar</a></h3>
-        </div>
+        <% if (!isLoggedIn) { %>
+            <div name="user" style="display: flex;align-self: space-around;">
+                <h3 style="margin-right: 30px; align-self: center;"><a href="/sign-up">Registrarse</a></h3>
+                <h3 style="margin-right: 30px; align-self: center;"><a href="/sign-in">Ingresar</a></h3>
+            </div>
+        <% } else {%>
+            <div name="user" style="display: flex;align-self: space-around;">
+                <h3 style="margin-right: 30px; align-self: center;"><%= user %></h3>
+                <h3 style="margin-right: 30px; align-self: center;"><a href="/log-out"><i class="fa-solid fa-power-off"></i></a></h3>
+            </div>
+        <% } %>
     </header>
     <div id="body">
         <h1>MovieWeb</h1>

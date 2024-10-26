@@ -19,7 +19,8 @@ const db = new sqlite3.Database('./movies.db');
 app.use(session({
     secret: 'tp1',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: { maxAge: 60000 }
 }));
 
 
@@ -35,7 +36,9 @@ app.set('view engine', 'ejs');
 
 // Ruta para la página de inicio
 app.get('/', (req, res) => {
-    res.render('index');
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
+    res.render('index', {isLoggedIn, user});
 });
 
 // Ruta para buscar películas
@@ -407,9 +410,11 @@ app.get('/director/:id', (req, res) => {
 
 //creacion de usuario
 app.get('/sign-up',(req,res) => {
-
-    res.render('newUser');
-
+    if(req.session.isLoggedIn){
+        res.redirect('/');
+    } else {
+        res.render('newUser');
+    }
 });
 
 app.post('/new-user',(req,res) =>{ 
@@ -466,9 +471,11 @@ app.post('/new-user',(req,res) =>{
 });
 
 app.get('/sign-in',(req,res) => {
-
-    res.render('login');
-
+    if(req.session.isLoggedIn){
+        res.redirect('/');
+    } else {
+        res.render('login');
+    }
 });
 
 //verificar la existencia del usuario y si su contraseña es valida
@@ -481,7 +488,6 @@ app.post('/log-in',(req,res) =>{
 
 
     db.get(userQuery,[user],(err,row)=>{    
-
         if(err){
             res.status(500).send('Error al verificar el usuario.');
         }else if(!row){
@@ -489,7 +495,7 @@ app.post('/log-in',(req,res) =>{
         }else if(pass === row.password ){
             req.session.user = row.username;//guarda el usuario
             req.session.isLoggedIn = true;//guarda el loggin en la session
-            res.render('index');
+            res.redirect('/');
         }else{
             res.status(400).send('Contraseña incorrecta.');
         };
@@ -497,10 +503,9 @@ app.post('/log-in',(req,res) =>{
 });
 
 //Cierra la sesion del usuario
-app.post('/log-out',(req,res) =>{
+app.get('/log-out',(req,res) =>{
         req.session.isLoggedIn = false;
-        res.render('index');
-
+        res.redirect('/');
 });
 
 
