@@ -21,6 +21,10 @@ header a {
   text-decoration: none;
 }
 
+header a:hover {
+  color: #d0d0d0;
+}
+
 header h1 {
   font-size: 45px;
   color: white;

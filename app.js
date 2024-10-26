@@ -93,7 +93,7 @@ app.get('/buscar', (req, res) => {
                 }
 
                 // Renderizar la plantilla de resultados con películas, actores y directores
-                res.render('resultado', { movies, actors, directors, isLoggedIn, user });
+                res.render('resultado', { movies, actors, directors, isLoggedIn, user, searchTerm });
             });
         });
     });

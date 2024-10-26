@@ -16,10 +16,15 @@ body > h1 {
 ul {
     list-style: none;
     padding: 0;
+    column-count: 4;
+    column-fill: balance;
+    -moz-column-fill: balance;
+    -webkit-column-fill: balance;
 }
 
 li {
     margin: 10px 0;
+    text-align: left;
 }
 
 a {
