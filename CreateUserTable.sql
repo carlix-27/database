@@ -9,4 +9,4 @@ CREATE TABLE IF NOT EXISTS user (
     isAdmin BIT NOT NULL
 );
 
-INSERT INTO user (username, name, email, password) VALUES ('admin', 'admin', 'admin@admin.com', 'admin', 1);
+INSERT INTO user (username, name, email, password, isAdmin) VALUES ('admin', 'admin', 'admin@admin.com', 'admin', 1);
