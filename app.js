@@ -45,6 +45,8 @@ app.get('/', (req, res) => {
 app.get('/buscar', (req, res) => {
     const searchTerm = req.query.q; // Name de la peli o lo que pongamos en el search.
     const filterSearch = req.query.filter; // movie, actor, director - array de filters.
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
 
     if(filterSearch){
         res.redirect(`/buscar-keywords/${searchTerm}`);
@@ -91,7 +93,7 @@ app.get('/buscar', (req, res) => {
                 }
 
                 // Renderizar la plantilla de resultados con películas, actores y directores
-                res.render('resultado', { movies, actors, directors });
+                res.render('resultado', { movies, actors, directors, isLoggedIn, user });
             });
         });
     });
@@ -126,6 +128,8 @@ app.get('/buscar-keywords/:keyword', (req, res) => {
 // Ruta para la página de datos de una película particular
 app.get('/pelicula/:id', async (req, res) => {
     const movieId = req.params.id;
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
 
     // Consulta SQL para obtener los datos de elenco y crew
     const crew_cast_query = `
@@ -337,7 +341,7 @@ app.get('/pelicula/:id', async (req, res) => {
                                     }
                                 }
                             });
-                            res.render('pelicula', { movie: movieData });
+                            res.render('pelicula', { movie: movieData, isLoggedIn, user });
                         }
                     })
                 }

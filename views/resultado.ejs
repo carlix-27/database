@@ -1,52 +1,65 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Resultado de la Búsqueda</title>
+    <link rel="stylesheet" href="/header.css">
     <link rel="stylesheet" href="/styles.css">
+    <script src="https://kit.fontawesome.com/2a8338fca4.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
-<h1>Resultado de la Búsqueda</h1>
+    <%- include('./partials/header') %>
+        <div id="body">
+            <h1 style="margin-top: 50px;">Resultado de la Búsqueda</h1>
+            <div id="cast_crew"
+                style="width: 85%;display: flex; flex-wrap: wrap; justify-content: space-evenly; text-align: center; margin: 30px 0;">
+                <!-- Movies Section -->
+                <h2 style="width: 30%;">Películas</h2>
+                <h2 style="width: 30%;">Actores</h2>
+                <h2 style="width: 30%;">Directores</h2>
+                <% if (movies.length===0) { %>
+                    <p style="width: 30%;">No se encontraron películas.</p>
+                    <% } else { %>
+                        <ul style="width: 30%;">
+                            <% movies.forEach((movie)=> { %>
+                                <li><a href="/pelicula/<%= movie.movie_id %>">
+                                        <%= movie.title %>
+                                    </a></li>
+                                <% }); %>
+                        </ul>
+                        <% } %>
 
-<div id="cast_crew"
-        style="width: 85%;display: flex; flex-wrap: wrap; justify-content: space-evenly; text-align: center; margin: 30px 0;">
-    <!-- Movies Section -->
-    <h2 style="width: 30%;">Películas</h2>
-    <h2 style="width: 30%;">Actores</h2>
-    <h2 style="width: 30%;">Directores</h2>
-    <% if (movies.length === 0) { %>
-        <p style="width: 30%;">No se encontraron películas.</p>
-    <% } else { %>
-        <ul style="width: 30%;">
-            <% movies.forEach((movie) => { %>
-                <li><a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %></a></li>
-            <% }); %>
-        </ul>
-    <% } %>
-
-    <!-- Actors Section -->
-    <% if (actors.length === 0) { %>
-            <p style="width: 30%;">No se encontraron actores.</p>
-        <% } else { %>
-            <ul style="width: 30%;">
-                <% actors.forEach((actor) => { %>
-                    <li><a href="/actor/<%= actor.person_id %>"><%= actor.person_name %></a></li>
-                <% }); %>
-            </ul>
-    <% } %>
+                            <!-- Actors Section -->
+                            <% if (actors.length===0) { %>
+                                <p style="width: 30%;">No se encontraron actores.</p>
+                                <% } else { %>
+                                    <ul style="width: 30%;">
+                                        <% actors.forEach((actor)=> { %>
+                                            <li><a href="/actor/<%= actor.person_id %>">
+                                                    <%= actor.person_name %>
+                                                </a></li>
+                                            <% }); %>
+                                    </ul>
+                                    <% } %>
 
 
-    <!-- Directors Section -->
-    <% if (directors.length === 0) { %>
-        <p style="width: 30%;">No se encontraron directores.</p>
-    <% } else { %>
-        <ul style="width: 30%;">
-            <% directors.forEach((director) => { %>
-                <li><a href="/director/<%= director.person_id %>"><%= director.person_name %></a></li>
-            <% }); %>
-        </ul>
-    <% } %>
-</div>
-<p></p>
-<div id="inicio"><a href="/">Inicio</a></div>
+                                        <!-- Directors Section -->
+                                        <% if (directors.length===0) { %>
+                                            <p style="width: 30%;">No se encontraron directores.</p>
+                                            <% } else { %>
+                                                <ul style="width: 30%;">
+                                                    <% directors.forEach((director)=> { %>
+                                                        <li><a href="/director/<%= director.person_id %>">
+                                                                <%= director.person_name %>
+                                                            </a></li>
+                                                        <% }); %>
+                                                </ul>
+                                                <% } %>
+            </div>
+            <p></p>
+            <div id="inicio"><a href="/">Inicio</a></div>
+        </div>
 </body>
+
 </html>
