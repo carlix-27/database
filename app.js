@@ -1,6 +1,6 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
-const ejs = require('ejs');
+// const ejs = require('ejs');
 const session = require('express-session');
 
 const app = express();
@@ -124,6 +124,7 @@ app.get('/buscar-keywords/:keyword', (req, res) => {
 app.get('/pelicula/:id', async (req, res) => {
     const movieId = req.params.id;
 
+
     // Consulta SQL para obtener los datos de elenco y crew
     const crew_cast_query = `
         SELECT
@@ -175,6 +176,14 @@ app.get('/pelicula/:id', async (req, res) => {
         WHERE movie.movie_id = ?;
     `;
 
+    // const reviews_query = `
+    //     SELECT movie.*
+    //     from movie
+    //     left join movie_review on movie.movie_id = movie_review.movie_id
+    //     left join user on movie_review.user_id = user.id
+    //     where movie.movie_id = ? and user.id = ?;
+    // `;
+
     // Ejecutar la consulta
     db.all(crew_cast_query, [movieId], (err, crew_cast_rows) => {
         if (err) {
@@ -200,7 +209,7 @@ app.get('/pelicula/:id', async (req, res) => {
 
                             // Organizar los datos en un objeto de película
                             const movieData = {
-                                id: small_data_rows[0].id,
+                                id: small_data_rows[0].movie_id,
                                 title: small_data_rows[0].title,
                                 release_date: small_data_rows[0].release_date,
                                 overview: small_data_rows[0].overview,
@@ -214,8 +223,11 @@ app.get('/pelicula/:id', async (req, res) => {
                                 runtime: small_data_rows[0].runtime,
                                 country: small_data_rows[0].country_name,
                                 company: small_data_rows[0].company_name,
-                                keyword: []
+                                keyword: [],
+                                reviews: []
                             };
+
+                            // todo: logica para mostrar las reseñas
 
                             keyword_rows.forEach((row) => {
                                 if (row.keyword_name) {
@@ -375,16 +387,43 @@ app.get('/actor/:id', (req, res) => {
 
 // Ruta para que el usuario pueda dejar un review
 app.post('/pelicula/:id/review', (req, res) =>{
-    const movieId = req.movie.id;
-    const userId = req.session.user;
+    const movieId = req.params.id;
+    // const userId = req.session.userId; // Para cualquier otro user
+    const userId = 1; // Para admin
+
+    console.log('req params ', req.params);
 
     console.log('Movie id',movieId);
     console.log('User id', userId);
 
     console.log('Req-body', req.body);
-    // Consulta SQL para agregar una review
+    const review = req.body.review;
+    const rating = req.body.rating; // Viene el value asociado al req.body.rating en front el radio.
 
+
+    const checkReviewQuery = 'select * FROM movie_review where movie_review.user_id = ? and movie_review.user_id =?';
+
+    // Consulta SQL para agregar una review
     const reviewQuery = `INSERT INTO movie_review (movie_id, user_id, review, rating) VALUES (?, ?, ?, ?)`;
+
+
+    // Todo: logica que chequee que ya no exista un review para esa movieId con ese userId.
+    db.get(checkReviewQuery, [movieId, userId], (err, existingReview) => {
+        if(err){
+            res.status(500).send('Error al verificar la pelicula');
+        } else if(existingReview) {
+            res.status(409).send('Ya existe una reseña de este usuario para esta pelicula');
+        } else {
+            db.run(reviewQuery,[movieId, userId, review, rating], (err) => {//crea el usuario en la db y redirige al usuario al login
+                if (err) {
+                    res.status(500).send('Error en el agregado de la reseña.');
+                } else {
+                    res.redirect(`/pelicula/${movieId}`);
+                }
+            });
+        }
+    })
+    // Todo: logica para que muestre las peliculas
 });
 
 // Ruta para mostrar la página de un director específico
@@ -444,14 +483,14 @@ app.post('/new-user',(req,res) =>{
     //confirmar que los campos esten completos y que las contraseñas sean iguales
 
 
-    if(name.length != 0 && mail.length != 0 && user.length != 0  && pass != 0){
-        if(passConfirm != pass){
+    if(name.length !== 0 && mail.length !== 0 && user.length !== 0  && pass !== 0){
+        if(passConfirm !== pass){
             res.status(400).send('Las contraseñas no son identicas.');
         }else{
             db.get(checkUserQuery,[user],(err,username) => {//checkear que el usuario no exista
                 if(err){
                     res.status(500).send('Error al verificar el usuario.');
-                }else if (!username){
+                }else if (!username){ // Chequea que el array username este vacio. !username -> array vacio.
 
                     db.get(checkMailQuery,[mail],(err,email) => {//checkear que el mail no exista
 
@@ -503,11 +542,12 @@ app.post('/log-in',(req,res) =>{
             res.status(400).send('Usuario no existe');
         }else if(pass === row.password ){
             req.session.user = row.username;//guarda el usuario
+            req.session.userId = row.id; //guarda el id
             req.session.isLoggedIn = true;//guarda el loggin en la session
             res.render('index');
         }else{
             res.status(400).send('Contraseña incorrecta.');
-        };
+        }
     });     
 });
 
