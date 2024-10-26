@@ -1,6 +1,6 @@
 const express = require('express');
 const sqlite3 = require('sqlite3');
-const ejs = require('ejs');
+// const ejs = require('ejs');
 const session = require('express-session');
 
 const app = express();
@@ -126,6 +126,10 @@ app.get('/buscar-keywords/:keyword', (req, res) => {
 // Ruta para la página de datos de una película particular
 app.get('/pelicula/:id', async (req, res) => {
     const movieId = req.params.id;
+    const userId = req.session.userId;
+    console.log('UserId: ', userId);
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
 
     // Consulta SQL para obtener los datos de elenco y crew
     const crew_cast_query = `
@@ -178,6 +182,14 @@ app.get('/pelicula/:id', async (req, res) => {
         WHERE movie.movie_id = ?;
     `;
 
+    const reviews_query = `
+        SELECT movie_review.rating, movie_review.review, user.username
+        from movie
+        left join movie_review on movie.movie_id = movie_review.movie_id
+        left join user on movie_review.user_id = user.id
+        where movie.movie_id = ?;
+    `;
+
     // Ejecutar la consulta
     db.all(crew_cast_query, [movieId], (err, crew_cast_rows) => {
         if (err) {
@@ -200,144 +212,162 @@ app.get('/pelicula/:id', async (req, res) => {
                         } else if (keyword_rows.length === 0) {
                             res.status(404).send('Película no encontrada.');
                         } else {
+                            db.all(reviews_query, [movieId], (err, reviews_rows ) => {
+                                if (err) {
+                                    res.status(500).send('Error al cargar los datos de los reviews.');
+                                } else{
+                                    // Organizar los datos en un objeto de película
+                                    const movieData = {
+                                        id: small_data_rows[0].movie_id,
+                                        title: small_data_rows[0].title,
+                                        release_date: small_data_rows[0].release_date,
+                                        overview: small_data_rows[0].overview,
+                                        directors: [],
+                                        writers: [],
+                                        cast: [],
+                                        crew: [],
+                                        language: small_data_rows[0].language_name,
+                                        genre: [],
+                                        vote: small_data_rows[0].vote_average,
+                                        runtime: small_data_rows[0].runtime,
+                                        country: small_data_rows[0].country_name,
+                                        company: small_data_rows[0].company_name,
+                                        keyword: [],
+                                        reviews: []
+                                    };
 
-                            // Organizar los datos en un objeto de película
-                            const movieData = {
-                                id: small_data_rows[0].id,
-                                title: small_data_rows[0].title,
-                                release_date: small_data_rows[0].release_date,
-                                overview: small_data_rows[0].overview,
-                                directors: [],
-                                writers: [],
-                                cast: [],
-                                crew: [],
-                                language: small_data_rows[0].language_name,
-                                genre: [],
-                                vote: small_data_rows[0].vote_average,
-                                runtime: small_data_rows[0].runtime,
-                                country: small_data_rows[0].country_name,
-                                company: small_data_rows[0].company_name,
-                                keyword: []
-                            };
-
-                            keyword_rows.forEach((row) => {
-                                if (row.keyword_name) {
-                                    // Verificar si ya existe una entrada con los mismos valores en el elenco
-                                    const isDuplicate = movieData.keyword.some((keyword) =>
-                                        keyword.keyword_name === row.keyword_name
-                                    );
-                                    if (!isDuplicate) {
-                                        // Si no existe, agregar los datos a la lista de elenco
-                                        movieData.keyword.push({
-                                            keyword_name: row.keyword_name,
-                                        });
-                                    }
-                                }
-                            });
-
-                            // Crear un objeto para almacenar directores
-                            crew_cast_rows.forEach((row) => {
-                                if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
-                                    // Verificar si ya existe una entrada con los mismos valores en directors
-                                    const isDuplicate = movieData.directors.some((crew_member) =>
-                                        crew_member.crew_member_id === row.crew_member_id
-                                    );
-
-                                    if (!isDuplicate) {
-                                        // Si no existe, agregar los datos a la lista de directors
-                                        if (row.department_name === 'Directing' && row.job === 'Director') {
-                                            movieData.directors.push({
-                                                crew_member_id: row.crew_member_id,
-                                                crew_member_name: row.crew_member_name,
-                                                department_name: row.department_name,
-                                                job: row.job,
+                                    reviews_rows.forEach((row) => {
+                                        if (row.review) {
+                                            movieData.reviews.push({
+                                                review: row.review,
+                                                username: row.username,
+                                                rating: row.rating
                                             });
                                         }
-                                    }
-                                }
-                            });
+                                    });
 
-                            // Crear un objeto para almacenar writers
-                            crew_cast_rows.forEach((row) => {
-                                if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
-                                    // Verificar si ya existe una entrada con los mismos valores en writers
-                                    const isDuplicate = movieData.writers.some((crew_member) =>
-                                        crew_member.crew_member_id === row.crew_member_id
-                                    );
 
-                                    if (!isDuplicate) {
-                                        // Si no existe, agregar los datos a la lista de writers
-                                        if (row.department_name === 'Writing' && row.job === 'Writer') {
-                                            movieData.writers.push({
-                                                crew_member_id: row.crew_member_id,
-                                                crew_member_name: row.crew_member_name,
-                                                department_name: row.department_name,
-                                                job: row.job,
-                                            });
+                                    keyword_rows.forEach((row) => {
+                                        if (row.keyword_name) {
+                                            // Verificar si ya existe una entrada con los mismos valores en el elenco
+                                            const isDuplicate = movieData.keyword.some((keyword) =>
+                                                keyword.keyword_name === row.keyword_name
+                                            );
+                                            if (!isDuplicate) {
+                                                // Si no existe, agregar los datos a la lista de elenco
+                                                movieData.keyword.push({
+                                                    keyword_name: row.keyword_name,
+                                                });
+                                            }
                                         }
-                                    }
-                                }
-                            });
+                                    });
 
-                            // Crear un objeto para almacenar el elenco
-                            crew_cast_rows.forEach((row) => {
-                                if (row.actor_id && row.actor_name && row.character_name) {
-                                    // Verificar si ya existe una entrada con los mismos valores en el elenco
-                                    const isDuplicate = movieData.cast.some((actor) =>
-                                        actor.actor_id === row.actor_id
-                                    );
+                                    // Crear un objeto para almacenar directores
+                                    crew_cast_rows.forEach((row) => {
+                                        if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
+                                            // Verificar si ya existe una entrada con los mismos valores en directors
+                                            const isDuplicate = movieData.directors.some((crew_member) =>
+                                                crew_member.crew_member_id === row.crew_member_id
+                                            );
 
-                                    if (!isDuplicate) {
-                                        // Si no existe, agregar los datos a la lista de elenco
-                                        movieData.cast.push({
-                                            actor_id: row.actor_id,
-                                            actor_name: row.actor_name,
-                                            character_name: row.character_name,
-                                            cast_order: row.cast_order,
-                                        });
-                                    }
-                                }
-                            });
-
-                            // Crear un objeto para almacenar el crew
-                            crew_cast_rows.forEach((row) => {
-                                if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
-                                    // Verificar si ya existe una entrada con los mismos valores en el crew
-                                    const isDuplicate = movieData.crew.some((crew_member) =>
-                                        crew_member.crew_member_id === row.crew_member_id
-                                    );
-
-                                    // console.log('movieData.crew: ', movieData.crew)
-                                    // console.log(isDuplicate, ' - row.crew_member_id: ', row.crew_member_id)
-                                    if (!isDuplicate) {
-                                        // Si no existe, agregar los datos a la lista de crew
-                                        if (row.department_name !== 'Directing' && row.job !== 'Director'
-                                            && row.department_name !== 'Writing' && row.job !== 'Writer') {
-                                            movieData.crew.push({
-                                                crew_member_id: row.crew_member_id,
-                                                crew_member_name: row.crew_member_name,
-                                                department_name: row.department_name,
-                                                job: row.job,
-                                            });
+                                            if (!isDuplicate) {
+                                                // Si no existe, agregar los datos a la lista de directors
+                                                if (row.department_name === 'Directing' && row.job === 'Director') {
+                                                    movieData.directors.push({
+                                                        crew_member_id: row.crew_member_id,
+                                                        crew_member_name: row.crew_member_name,
+                                                        department_name: row.department_name,
+                                                        job: row.job,
+                                                    });
+                                                }
+                                            }
                                         }
-                                    }
-                                }
-                            });
+                                    });
 
-                            // Crear un objeto para almacenar el genero
-                            small_data_rows.forEach((row) => {
-                                if (row.genre_name) {
-                                    const isDuplicate = movieData.genre.some((genre) =>
-                                        genre.genre_name === row.genre_name
-                                    );
-                                    if (!isDuplicate) {
-                                        movieData.genre.push({
-                                            genre_name: row.genre_name,
-                                        });
-                                    }
+                                    // Crear un objeto para almacenar writers
+                                    crew_cast_rows.forEach((row) => {
+                                        if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
+                                            // Verificar si ya existe una entrada con los mismos valores en writers
+                                            const isDuplicate = movieData.writers.some((crew_member) =>
+                                                crew_member.crew_member_id === row.crew_member_id
+                                            );
+
+                                            if (!isDuplicate) {
+                                                // Si no existe, agregar los datos a la lista de writers
+                                                if (row.department_name === 'Writing' && row.job === 'Writer') {
+                                                    movieData.writers.push({
+                                                        crew_member_id: row.crew_member_id,
+                                                        crew_member_name: row.crew_member_name,
+                                                        department_name: row.department_name,
+                                                        job: row.job,
+                                                    });
+                                                }
+                                            }
+                                        }
+                                    });
+
+                                    // Crear un objeto para almacenar el elenco
+                                    crew_cast_rows.forEach((row) => {
+                                        if (row.actor_id && row.actor_name && row.character_name) {
+                                            // Verificar si ya existe una entrada con los mismos valores en el elenco
+                                            const isDuplicate = movieData.cast.some((actor) =>
+                                                actor.actor_id === row.actor_id
+                                            );
+
+                                            if (!isDuplicate) {
+                                                // Si no existe, agregar los datos a la lista de elenco
+                                                movieData.cast.push({
+                                                    actor_id: row.actor_id,
+                                                    actor_name: row.actor_name,
+                                                    character_name: row.character_name,
+                                                    cast_order: row.cast_order,
+                                                });
+                                            }
+                                        }
+                                    });
+
+                                    // Crear un objeto para almacenar el crew
+                                    crew_cast_rows.forEach((row) => {
+                                        if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
+                                            // Verificar si ya existe una entrada con los mismos valores en el crew
+                                            const isDuplicate = movieData.crew.some((crew_member) =>
+                                                crew_member.crew_member_id === row.crew_member_id
+                                            );
+
+                                            // console.log('movieData.crew: ', movieData.crew)
+                                            // console.log(isDuplicate, ' - row.crew_member_id: ', row.crew_member_id)
+                                            if (!isDuplicate) {
+                                                // Si no existe, agregar los datos a la lista de crew
+                                                if (row.department_name !== 'Directing' && row.job !== 'Director'
+                                                    && row.department_name !== 'Writing' && row.job !== 'Writer') {
+                                                    movieData.crew.push({
+                                                        crew_member_id: row.crew_member_id,
+                                                        crew_member_name: row.crew_member_name,
+                                                        department_name: row.department_name,
+                                                        job: row.job,
+                                                    });
+                                                }
+                                            }
+                                        }
+                                    });
+
+                                    // Crear un objeto para almacenar el genero
+                                    small_data_rows.forEach((row) => {
+                                        if (row.genre_name) {
+                                            const isDuplicate = movieData.genre.some((genre) =>
+                                                genre.genre_name === row.genre_name
+                                            );
+                                            if (!isDuplicate) {
+                                                movieData.genre.push({
+                                                    genre_name: row.genre_name,
+                                                });
+                                            }
+                                        }
+                                    });
+
+                                    res.render('pelicula', { movie: movieData, isLoggedIn, user });
                                 }
-                            });
-                            res.render('pelicula', { movie: movieData });
+                            })
                         }
                     })
                 }
@@ -373,6 +403,40 @@ app.get('/actor/:id', (req, res) => {
             res.render('actor', { actorName, movies });
         }
     });
+});
+
+
+// Ruta para que el usuario pueda dejar un review
+app.post('/pelicula/:id/review', (req, res) =>{
+    const movieId = req.params.id;
+    const userId = req.session.userId; // Para cualquier otro user
+    // const userId = 1; // Para admin
+
+
+    const review = req.body.review;
+    const rating = req.body.rating; // Viene el value asociado al req.body.rating en front el radio.
+
+
+    const checkReviewQuery = 'select * FROM movie_review where movie_review.movie_id = ? and movie_review.user_id =?';
+
+    // Consulta SQL para agregar una review
+    const reviewQuery = `INSERT INTO movie_review (movie_id, user_id, review, rating) VALUES (?, ?, ?, ?)`;
+
+    db.get(checkReviewQuery, [movieId, userId], (err, existingReview) => {
+        if(err){
+            res.status(500).send('Error al verificar la pelicula');
+        } else if(existingReview) {
+            res.status(409).send('Ya existe una reseña de este usuario para esta pelicula');
+        } else {
+            db.run(reviewQuery,[movieId, userId, review, rating], (err) => {//crea el usuario en la db y redirige al usuario al login
+                if (err) {
+                    res.status(500).send('Error en el agregado de la reseña.');
+                } else {
+                    res.redirect(`/pelicula/${movieId}`);
+                }
+            });
+        }
+    })
 });
 
 // Ruta para mostrar la página de un director específico
@@ -441,7 +505,7 @@ app.post('/new-user',(req,res) =>{
             db.get(checkUserQuery,[user],(err,username) => {//checkear que el usuario no exista
                 if(err){
                     res.status(500).send('Error al verificar el usuario.');
-                }else if (!username){
+                }else if (!username){ // Chequea que el array username este vacio. !username -> array vacio.
 
                     db.get(checkMailQuery,[mail],(err,email) => {//checkear que el mail no exista
 
@@ -494,11 +558,12 @@ app.post('/log-in',(req,res) =>{
             res.status(400).send('Usuario no existe');
         }else if(pass === row.password ){
             req.session.user = row.username;//guarda el usuario
+            req.session.userId = row.id; //guarda el id
             req.session.isLoggedIn = true;//guarda el loggin en la session
             res.redirect('/');
         }else{
             res.status(400).send('Contraseña incorrecta.');
-        };
+        }
     });     
 });
 

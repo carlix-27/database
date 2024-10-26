@@ -150,6 +150,35 @@
             <% }) %>
         </p>
     </div>
+    <div>
+        <h3>Reseñas</h3>
+        <%if(isLoggedIn){ %>
+            <form action="/pelicula/<%= movie.id %>/review" method="POST" >
+                <input type="text" name="review" placeholder="Escribi tu reseña (Opcional)..." />
+                <button type="submit">Agregar</button>
+                <% for (let i = 0; i <= 10; i++) { %>
+                    <input type="radio" name="rating" value="<%= i %>" id="<%= i %>" />
+                    <label for="<%= i %>"><%= i %></label>
+                <% } %>
+            </form>
+        <% } %>
+
+        <ul>
+            <% if (movie.reviews.length === 0) { %>
+                <li>Nadie ha hecho una reseña todavía. ¡Hacé la primera!</li>
+            <% } else { %>
+                <% movie.reviews.forEach(review => { %>
+                    <li>
+                        <p><strong>Usuario:</strong> <%= review.username %></p>
+                        <p><strong>Calificación:</strong> <%= review.rating %></p>
+                        <p><strong>Reseña:</strong> <%= review.review %></p>
+                    </li>
+                <% }) %>
+            <% } %>
+        </ul>
+    </div>
+
+
     <p></p>
     <div id="inicio"><a href="/">Inicio</a></div>
 </body>
