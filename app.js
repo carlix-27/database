@@ -577,65 +577,101 @@ app.get('/log-out',(req,res) =>{
 app.get('/user-admin',(req,res) =>{
 
     if(req.session.isAdmin){
-        res.render('adminUser');
+        
+        //do query
+        
+        res.render('adminUser', {users});
+
+    }else{
+        res.redirect('/');
+    };
+
+});
+
+app.put('/user-admin/reset-pass/:id',(req,res) =>{
+
+    if(req.session.isAdmin){
+        
+        const id = req.params.id;
+        
+        const query = "UPDATE user SET password = '123' WHERE id = ?";
+
+        db.run(query,[id],(err) =>{
+            if(err){
+                res.status(500).send('Error al resetear la contraseña.');
+            };
+        });
+
+    }else{
+        res.redirect('/');
+    };
+
+    
+});
+
+app.put('/user-admin/change-username/:id', (req,res) =>{
+
+    if(req.session.isAdmin){
+        
+        const id = req.params.id;
+        const newUser = req.body.newUser;
+
+        const query = "UPDATE user SET username = ? WHERE id = ?";
+
+        db.run(query,[newUser,id],(err)=>{
+            if(err){
+                res.status(500).send('Error al cambiar el usuario.')
+            }
+        });
+
+    }else{
+        res.redirect('/');
+    };
+
+    
+});
+
+app.post('/user-admin/delete-user/:id', (req,res) =>{
+
+    
+
+    if(req.session.isAdmin){
+        
+        const id = req.params.id;
+
+        const query = "DELETE FROM user WHERE id = ?";
+
+        db.run(query,[id],(err)=>{
+            if(err){
+                res.status(500).send('Error al borrar el usuario.');
+            }else{
+                res.redirect('/user-admin');
+            };
+        });
+
     }else{
         res.redirect('/');
     };
 });
 
-app.put('/user-admin/reset-pass',(req,res) =>{
+app.put('/user-admin/delete-reviews/:id', (req,res) =>{
 
-    const id = req.body.id;
+    if(req.session.isAdmin){
+        
+        const id = req.body.id;
+
+        const query = "UPDATE movie_review SET review = null WHERE user_id = ?";
+
+        db.run(query,[newUser,id],(err)=>{
+            if(err){
+                res.status(500).send('Error al borrar las reseñas.')
+            };
+        });
+    }else{
+        res.redirect('/');
+    };
+
     
-    const query = "UPDATE user SET password = '123' WHERE id = ?";
-
-    db.run(query,[id],(err) =>{
-        if(err){
-            res.status(500).send('Error al resetear la contraseña.');
-        };
-    });
-});
-
-app.put('/user-admin/change-username', (req,res) =>{
-
-    const id = req.body.id;
-    const newUser = req.body.newUser;
-
-    const query = "UPDATE user SET username = ? WHERE id = ?";
-
-    db.run(query,[newUser,id],(err)=>{
-        if(err){
-            res.status(500).send('Error al cambiar el usuario.')
-        }
-    })
-});
-
-app.put('/user-admin/delete-user', (req,res) =>{
-
-    const id = req.body.id;
-
-    const query = "DELETE FROM user WHERE id = ?";
-
-    db.run(query,[id],(err)=>{
-        if(err){
-            res.status(500).send('Error al borrar el usuario.');
-        }else{
-            res.redirect('/user-admin');
-        };
-    });
-});
-
-app.put('/user-admin/delete-reviews', (req,res) =>{
-
-    const id = req.body.id;
-
-    const query = "UPDATE movie_review SET review = null WHERE user_id = ?";
-
-    db.run(query,[newUser,id],(err)=>{
-        if(err){
-            res.status(500).send('Error al borrar las reseñas.')
-        };
-    });
 });
 
 
