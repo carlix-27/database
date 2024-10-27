@@ -560,10 +560,11 @@ app.post('/log-in',(req,res) =>{
             req.session.user = row.username;//guarda el usuario
             req.session.userId = row.id; //guarda el id
             req.session.isLoggedIn = true;//guarda el loggin en la session
+            if(row.isAdmin == 1){req.session.isAdmin = true;};
             res.redirect('/');
         }else{
             res.status(400).send('Contraseña incorrecta.');
-        }
+        };
     });     
 });
 
@@ -572,6 +573,71 @@ app.get('/log-out',(req,res) =>{
         req.session.isLoggedIn = false;
         res.redirect('/');
 });
+
+app.get('/user-admin',(req,res) =>{
+
+    if(req.session.isAdmin){
+        res.render('adminUser');
+    }else{
+        res.redirect('/');
+    };
+});
+
+app.put('/user-admin/reset-pass',(req,res) =>{
+
+    const id = req.body.id;
+    
+    const query = "UPDATE user SET password = '123' WHERE id = ?";
+
+    db.run(query,[id],(err) =>{
+        if(err){
+            res.status(500).send('Error al resetear la contraseña.');
+        };
+    });
+});
+
+app.put('/user-admin/change-username', (req,res) =>{
+
+    const id = req.body.id;
+    const newUser = req.body.newUser;
+
+    const query = "UPDATE user SET username = ? WHERE id = ?";
+
+    db.run(query,[newUser,id],(err)=>{
+        if(err){
+            res.status(500).send('Error al cambiar el usuario.')
+        }
+    })
+});
+
+app.put('/user-admin/delete-user', (req,res) =>{
+
+    const id = req.body.id;
+
+    const query = "DELETE FROM user WHERE id = ?";
+
+    db.run(query,[id],(err)=>{
+        if(err){
+            res.status(500).send('Error al borrar el usuario.');
+        }else{
+            res.redirect('/user-admin');
+        };
+    });
+});
+
+app.put('/user-admin/delete-reviews', (req,res) =>{
+
+    const id = req.body.id;
+
+    const query = "UPDATE movie_review SET review = null WHERE user_id = ?";
+
+    db.run(query,[newUser,id],(err)=>{
+        if(err){
+            res.status(500).send('Error al borrar las reseñas.')
+        };
+    });
+});
+
 
 
 
