@@ -495,7 +495,11 @@ app.post('/new-user',(req,res) =>{
     const checkUserQuery = 'select * FROM user where username = ?';
     const checkMailQuery = 'select * FROM user where email = ?';
 
+
     const query = 'INSERT INTO user (username, name, email, password, isAdmin) VALUES (?, ?, ?, ?, 0)';
+
+    const query = 'INSERT INTO user (username, name, email, password, isAdmin) VALUES (?, ?, ?, ?,0)';
+
 
     console.log(req.body);
     const name = req.body.name;
