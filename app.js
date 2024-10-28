@@ -15,12 +15,21 @@ app.use(express.urlencoded({ extended: true }));
 // Por ejemplo 'C:\\Users\\datagrip\\movies.db'
 const db = new sqlite3.Database('./movies.db');
 
+// habilitar foreign keys
+db.run("PRAGMA foreign_keys = ON;", (err) => {
+    if (err) {
+      console.error("Error al habilitar foreign keys:", err.message);
+    } else {
+      console.log("Foreign key habilitadas.");
+    }
+  });
+
 //configuro las sessions
 app.use(session({
     secret: 'tp1',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 60000 }
+    cookie: { maxAge: 60000 * 60 * 24 }
 }));
 
 
@@ -486,7 +495,7 @@ app.post('/new-user',(req,res) =>{
     const checkUserQuery = 'select * FROM user where username = ?';
     const checkMailQuery = 'select * FROM user where email = ?';
 
-    const query = 'INSERT INTO user (username, name, email, password) VALUES (?, ?, ?, ?)';
+    const query = 'INSERT INTO user (username, name, email, password, isAdmin) VALUES (?, ?, ?, ?, 0)';
 
     console.log(req.body);
     const name = req.body.name;
@@ -561,6 +570,7 @@ app.post('/log-in',(req,res) =>{
             req.session.userId = row.id; //guarda el id
             req.session.isLoggedIn = true;//guarda el loggin en la session
             if(row.isAdmin == 1){req.session.isAdmin = true;};
+            if(row.id == 1){req.session.isSuperAdmin = true};
             res.redirect('/');
         }else{
             res.status(400).send('Contraseña incorrecta.');
@@ -570,25 +580,53 @@ app.post('/log-in',(req,res) =>{
 
 //Cierra la sesion del usuario
 app.get('/log-out',(req,res) =>{
-        req.session.isLoggedIn = false;
+        req.session.destroy();
         res.redirect('/');
 });
 
 app.get('/user-admin',(req,res) =>{
 
     if(req.session.isAdmin){
-        
-        //do query
-        
-        res.render('adminUser', {users});
 
+        let query;
+        const isSuperAdmin = req.session.isSuperAdmin;
+
+        if(req.session.isSuperAdmin){
+            query = 'select * FROM user WHERE id != 1';
+        }else{
+            query = 'select * FROM user WHERE isAdmin == 0';
+        }
+        
+
+        db.all(query,(err,usersList) =>{
+            if(err){
+                res.status(500).send('Error al buscar usuarios.');
+            }else{
+                const users = {
+                    user: []
+                };
+                usersList.forEach((row) => {
+                    
+                    users.user.push({
+                        username: row.username,
+                        userId: row.id,
+                        email: row.email,
+                        isAdmin: row.isAdmin
+                    });
+                    
+                });
+                res.render('adminUser' ,{ users: users, isSuperAdmin });
+            };
+
+        });
+        
     }else{
         res.redirect('/');
     };
 
 });
 
-app.put('/user-admin/reset-pass/:id',(req,res) =>{
+app.post('/user-admin/reset-pass/:id',(req,res) =>{
 
     if(req.session.isAdmin){
         
@@ -599,28 +637,8 @@ app.put('/user-admin/reset-pass/:id',(req,res) =>{
         db.run(query,[id],(err) =>{
             if(err){
                 res.status(500).send('Error al resetear la contraseña.');
-            };
-        });
-
-    }else{
-        res.redirect('/');
-    };
-
-    
-});
-
-app.put('/user-admin/change-username/:id', (req,res) =>{
-
-    if(req.session.isAdmin){
-        
-        const id = req.params.id;
-        const newUser = req.body.newUser;
-
-        const query = "UPDATE user SET username = ? WHERE id = ?";
-
-        db.run(query,[newUser,id],(err)=>{
-            if(err){
-                res.status(500).send('Error al cambiar el usuario.')
+            }else{;
+                res.redirect('/user-admin');
             }
         });
 
@@ -631,9 +649,37 @@ app.put('/user-admin/change-username/:id', (req,res) =>{
     
 });
 
-app.post('/user-admin/delete-user/:id', (req,res) =>{
+app.post('/user-admin/change-username/:id', (req,res) =>{
+
+    if(req.session.isAdmin){
+        
+        const id = req.params.id;
+        const newUser = req.body.newUser;
+        
+        if(newUser == null){res.redirect('/user-admin')};
+
+        const query = "UPDATE user SET username = ? WHERE id = ?";
+        
+        db.run(query,[newUser,id],(err)=>{
+            console.log(err)
+            if(err.errno == 19){
+                res.status(409).send('Usuario ya utilizado.');
+            }else if(err){
+                res.status(500).send('Error al cambiar el usuario.')
+            }else{
+                res.redirect('/user-admin');
+            }
+
+        });
+
+    }else{
+        res.redirect('/');
+    };
 
     
+});
+
+app.post('/user-admin/delete-user/:id', (req,res) =>{
 
     if(req.session.isAdmin){
         
@@ -654,24 +700,64 @@ app.post('/user-admin/delete-user/:id', (req,res) =>{
     };
 });
 
-app.put('/user-admin/delete-reviews/:id', (req,res) =>{
+app.post('/user-admin/delete-reviews/:id', (req,res) =>{
 
     if(req.session.isAdmin){
         
-        const id = req.body.id;
+        const id = req.params.id;
 
         const query = "UPDATE movie_review SET review = null WHERE user_id = ?";
 
-        db.run(query,[newUser,id],(err)=>{
+        db.run(query,[id],(err)=>{
             if(err){
                 res.status(500).send('Error al borrar las reseñas.')
+            }else{
+                res.redirect('/user-admin');
+            }
+        });
+    }else{
+        res.redirect('/');
+    };
+});
+
+app.post('/user-admin/make-admin/:id',(req,res) =>{
+
+
+    if(req.session.isSuperAdmin){
+
+        const id = req.params.id
+        const query = "UPDATE user SET isAdmin = 1 WHERE id = ?";
+
+        db.run(query,[id],(err) =>{
+            if(err){
+                res.status(500).send('Error making admin.');
+            }else{
+                res.redirect('/user-admin');
             };
         });
     }else{
         res.redirect('/');
     };
+});
 
-    
+app.post('/user-admin/remove-admin/:id',(req,res) =>{
+
+
+    if(req.session.isSuperAdmin){
+
+        const id = req.params.id
+        const query = "UPDATE user SET isAdmin = 0 WHERE id = ?";
+
+        db.run(query,[id],(err) =>{
+            if(err){
+                res.status(500).send('Error removing admin.');
+            }else{
+                res.redirect('/user-admin');
+            };
+        });
+    }else{
+        res.redirect('/');
+    };
 });
 
 
