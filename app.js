@@ -498,8 +498,6 @@ app.post('/new-user',(req,res) =>{
 
     const query = 'INSERT INTO user (username, name, email, password, isAdmin) VALUES (?, ?, ?, ?, 0)';
 
-    const query = 'INSERT INTO user (username, name, email, password, isAdmin) VALUES (?, ?, ?, ?,0)';
-
 
     console.log(req.body);
     const name = req.body.name;
