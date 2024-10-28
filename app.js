@@ -447,6 +447,48 @@ app.post('/pelicula/:id/review', (req, res) =>{
         }
     })
 });
+// Ruta para guardar o eliminar una película como favorita.
+app.get('/pelicula/:id/saved-list', (req, res) => {
+    if (req.session.isLoggedIn) {
+        const userId = req.session.userId;
+        const movieId = req.params.id;
+
+        // Query to check if the movie is already in the user's saved list
+        const checkFavoriteQuery = 'SELECT * FROM saved_list WHERE user_id = ? AND movie_id = ?';
+
+        db.get(checkFavoriteQuery, [userId, movieId], (err, row) => {
+            if (err) {
+                res.status(500).send('Error al verificar la película en la lista de favoritos.');
+            } else {
+                if (row) {
+                    // Movie is already in the saved list, so remove it
+                    const deleteFavoriteQuery = 'DELETE FROM saved_list WHERE user_id = ? AND movie_id = ?';
+                    db.run(deleteFavoriteQuery, [userId, movieId], function (err) {
+                        if (err) {
+                            res.status(500).send('Error al eliminar la película de la lista de favoritos.');
+                        } else {
+                            res.redirect(`/pelicula/${movieId}`); // Redirect back to the movie page
+                        }
+                    });
+                } else {
+                    // Movie is not in the saved list, so add it
+                    const insertFavoriteQuery = 'INSERT INTO saved_list (user_id, movie_id, fav) VALUES (?, ?, ?)';
+                    db.run(insertFavoriteQuery, [userId, movieId, 1], function (err) { // Set fav to 1 (true) when adding
+                        if (err) {
+                            res.status(500).send('Error al guardar la película en la lista de favoritos.');
+                        } else {
+                            res.redirect(`/pelicula/${movieId}`); // Redirect back to the movie page
+                        }
+                    });
+                }
+            }
+        });
+    } else {
+        res.redirect('/sign-in'); // Redirect to sign-in if the user is not logged in
+    }
+});
+
+
 
 // Ruta para mostrar la página de un director específico
 app.get('/director/:id', (req, res) => {
@@ -627,6 +669,60 @@ app.get('/user-admin',(req,res) =>{
     };
 
 });
+
+// Crea la página usuario
+app.get('/usuario', (req, res) => {
+    if (req.session.isLoggedIn) {
+        const userId = req.session.userId; // Obtiene el ID del usuario conectado desde la sesión
+
+        // Consulta para obtener datos específicos del usuario
+        const userQuery = 'SELECT * FROM user WHERE id = ?';
+
+        // Consulta modificada para obtener reseñas escritas por el usuario, incluyendo nombres de películas
+        const reviewsQuery = `
+            SELECT mr.review, mr.rating, m.title AS movie_name
+            FROM movie_review mr
+            JOIN movie m ON mr.movie_id = m.movie_id
+            WHERE mr.user_id = ?;
+        `;
+
+        // Consulta para obtener las películas favoritas del usuario
+        const favoritesQuery = `
+            SELECT m.title AS movie_name
+            FROM saved_list sl
+            JOIN movie m ON sl.movie_id = m.movie_id
+            WHERE sl.user_id = ? AND sl.fav = 1; // Asegura que solo se obtengan las películas favoritas
+        `;
+
+        db.get(userQuery, [userId], (err, userData) => {
+            if (err) {
+                res.status(500).send('Error al obtener la información del usuario.');
+            } else if (!userData) {
+                res.status(404).send('Usuario no encontrado.');
+            } else {
+                // Obtiene las reseñas escritas por el usuario
+                db.all(reviewsQuery, [userId], (err, reviews) => {
+                    if (err) {
+                        res.status(500).send('Error al obtener las reseñas del usuario.');
+                    } else {
+                        // Obtiene las películas favoritas
+                        db.all(favoritesQuery, [userId], (err, favorites) => {
+                            if (err) {
+                                res.status(500).send('Error al obtener las películas favoritas del usuario.');
+                            } else {
+                                // Renderiza la página del usuario con datos específicos del usuario, reseñas y películas favoritas
+                                res.render('usuario', { user: userData, reviews: reviews, favorites: favorites });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    } else {
+        res.redirect('/sign-in'); // Redirige a la página de inicio de sesión si el usuario no está conectado
+    }
+});
+
 
 app.post('/user-admin/reset-pass/:id',(req,res) =>{
 
