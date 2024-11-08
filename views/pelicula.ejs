@@ -150,7 +150,7 @@
                 </p>
             </div>
             <div>
-                <h3>Reseñas</h3>
+                <h3>Reseñas de usuarios</h3>
                 <%if(isLoggedIn){ %>
                     <form action="/pelicula/<%= movie.id %>/review" method="POST" >
                         <input type="text" name="review" placeholder="Escribi tu reseña (Opcional)..." />
@@ -160,6 +160,8 @@
                             <label for="<%= i %>"><%= i %></label>
                         <% } %>
                     </form>
+                <% } else { %>
+                    <p>Iniciá sesión para dejar una reseña!</p>
                 <% } %>
         
                 <ul>
