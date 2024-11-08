@@ -7,16 +7,42 @@
     </title>
     <link rel="stylesheet" href="/header.css">
     <link rel="stylesheet" href="/pelicula.css">
-    <script src="https://kit.fontawesome.com/2a8338fca4.js" crossorigin="anonymous"></script>
+    <!-- Include Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body>
     <%- include('./partials/header') %>
         <div id="body">
-            <div id="short_data" style="margin-bottom: 30px; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-evenly; text-align: center; width: 85%;">
-                <h1>
+            <div style="width: 85%; display: flex; justify-content: center; position: relative;">
+                <% if (isLoggedIn) { %>
+                    <h1>
+                        <div style="margin: 0 30px; align-self: center; color: transparent;">
+                            <i class="fas fa-bookmark"></i> <!-- Bookmark icon -->
+                        </div>
+                    </h1>
+                <% } %>
+                
+                <h1 style="margin: 0 15px; align-self: center;">
                     <%= movie.title %>
                 </h1>
+                
+                <!--Boton para salvar las peliculas -->
+                <% if (isLoggedIn) { %>
+                    <h1>
+                        <div style="margin: 0 30px; align-self: center;">
+                            <a href="/pelicula/<%= movie.id %>/saved-list" style="text-decoration: none;">
+                                <% if (movie.saved) { %>
+                                    <i class="fas fa-bookmark"></i> <!-- Bookmark icon -->
+                                <% } else { %>
+                                    <i class="fa-regular fa-bookmark"></i> <!-- Empty bookmark icon -->
+                                <% } %>
+                            </a>
+                        </div>
+                    </h1>
+                <% } %>
+            </div>
+            <div id="short_data" style="margin-bottom: 30px; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-evenly; text-align: center; width: 85%;">
                 <h3 style="width: 30%; order: 1;">Dirigida por</h3>
                 <ul style="width: 30%; order: 2;">
                     <% if (movie.directors.length==0) { %>
