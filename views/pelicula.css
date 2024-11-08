@@ -6,8 +6,6 @@
     /* flex-wrap: wrap; */
     justify-content: flex-start;
     align-items: center;
-    height: 100vh;
-    margin: 0;
 }
 
 #body h1 {
@@ -28,8 +26,23 @@ ul {
     margin: 0;
 }
 
-li {
+#short_data li {
     margin: 10px 0;
+}
+
+#cast_crew li a {
+    text-align: left;
+}
+
+#cast_crew li + li {
+    margin-top: 10px;
+}
+
+#cast_crew ul {
+    column-count: 4;
+    column-fill: balance;
+    -moz-column-fill: balance;
+    -webkit-column-fill: balance;
 }
 
 a {

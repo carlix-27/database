@@ -13,8 +13,7 @@
 <body>
     <%- include('./partials/header') %>
         <div id="body">
-            <div id="short_data"
-                style="margin-bottom: 30px; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-evenly; text-align: center; width: 85%;">
+            <div id="short_data" style="margin-bottom: 30px; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-evenly; text-align: center; width: 85%;">
                 <h1>
                     <%= movie.title %>
                 </h1>
@@ -24,14 +23,14 @@
                         <li>
                             No data
                         </li>
-                        <% } %>
-                            <% movie.directors.forEach((director)=> { %>
-                                <li>
-                                    <a href="/director/<%= director.crew_member_id %>">
-                                        <%= director.crew_member_name %>
-                                    </a>
-                                </li>
-                                <% }); %>
+                    <% } %>
+                    <% movie.directors.forEach((director)=> { %>
+                        <li>
+                            <a href="/director/<%= director.crew_member_id %>">
+                                <%= director.crew_member_name %>
+                            </a>
+                        </li>
+                    <% }); %>
                 </ul>
                 <h3 style="width: 30%; order: 1;">
                     Fecha
@@ -41,10 +40,10 @@
                         <li>
                             No data
                         </li>
-                        <% } %>
-                            <li>
-                                <%= movie.release_date %>
-                            </li>
+                    <% } %>
+                    <li>
+                        <%= movie.release_date %>
+                    </li>
                 </ul>
                 <h3 style="width: 30%; order: 1;">
                     Puntuación
@@ -60,12 +59,12 @@
                         <li>
                             No data
                         </li>
-                        <% } %>
-                            <% movie.writers.forEach((writer)=> { %>
-                                <li>
-                                    <%= writer.crew_member_name ? writer.crew_member_name : "No data" %>
-                                </li>
-                                <% }); %>
+                    <% } %>
+                    <% movie.writers.forEach((writer)=> { %>
+                        <li>
+                            <%= writer.crew_member_name ? writer.crew_member_name : "No data" %>
+                        </li>
+                    <% }); %>
                 </ul>
                 <h3 style="width: 30%; order: 3;">
                     Idioma
@@ -107,7 +106,7 @@
                         <li style="text-align: center;">
                             <%= genre.genre_name %> %>
                         </li>
-                        <% }); %>
+                    <% }); %>
                 </ul>
             </div>
             <h3>Argumento</h3>
@@ -117,35 +116,37 @@
                 </p>
             </div>
             <div id="cast_crew"
-                style="width: 85%;display: flex; flex-wrap: wrap; justify-content: space-evenly; text-align: center; margin: 30px 0;">
-                <h3 style="width: 40%;">Elenco</h3>
-                <h3 style="width: 40%;">Crew</h3>
-                <ul style="width: 40%;">
+                style="width: 85%;display: flex; flex-wrap: wrap; justify-content: space-evenly; margin: 30px 0;">
+                <h3 style="width: 100%;">Elenco</h3>
+                
+                <ul style="width: 100%; margin:15px 0">
                     <% movie.cast.sort((a, b)=> a.cast_order - b.cast_order).forEach((actor) => { %>
-                        <li style="text-align: center;"><a href="/actor/<%= actor.actor_id %>">
+                        <li><a href="/actor/<%= actor.actor_id %>">
                                 <%= actor.actor_name %>
                             </a> - <%= actor.character_name %>
                         </li>
-                        <% }); %>
+                    <% }); %>
                 </ul>
-                <ul style="width: 40%;">
+                <h3 style="width: 100%;">Crew</h3>
+                <ul style="width: 100%; margin:15px 0">
                     <% movie.crew.forEach((crewMember)=> { %>
-                        <li style="text-align: center;">
-                            <%= crewMember.crew_member_name %> - <%= crewMember.department_name %>
-                                    (<%= crewMember.job %>)
+                        <li>
+                            <%= crewMember.crew_member_name %> - <%= crewMember.department_name %> (<%= crewMember.job %>)
                         </li>
-                        <% }); %>
+                    <% }); %>
                 </ul>
             </div>
             <div style="width: 85%;">
                 <h3>Palabras clave</h3>
                 <p>
                     <% movie.keyword.forEach((keyword, index)=> { %>
-                        <%= keyword.keyword_name %>
-                            <% if (index < movie.keyword.length - 1) { %>
-                                -
-                                <% } %>
-                                    <% }) %>
+                        <a href="/buscar-keywords/<%= keyword.keyword_name %>">
+                            <%= keyword.keyword_name %>
+                        </a>
+                        <% if (index < movie.keyword.length - 1) { %>
+                            -
+                        <% } %>
+                    <% }) %>
                 </p>
             </div>
             <p></p>

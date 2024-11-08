@@ -23,8 +23,11 @@ ul {
 }
 
 li {
-    margin: 10px 0;
     text-align: left;
+}
+
+li + li {
+    margin-top: 10px;
 }
 
 a {

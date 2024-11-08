@@ -14,13 +14,13 @@
             <h1 style="margin-top: 50px;">Resultados para: "<%= searchTerm %>"
             </h1>
             <div id="cast_crew"
-                style="width: 85%;display: flex; flex-wrap: wrap; justify-content: space-evenly; text-align: center; margin: 30px 0;">
+                style="width: 85%;display: flex; flex-wrap: wrap; justify-content: space-evenly; text-align: center;">
                 <!-- Movies Section -->
                 <h2 style="width: 100%; text-align: left;">Películas</h2>
                 
                 
                 <% if (movies.length===0) { %>
-                    <p style="width: 100%;">No se encontraron películas.</p>
+                    <p style="width: 100%; text-align: left;">No se encontraron películas.</p>
                     <% } else { %>
                         <ul style="width: 100%;">
                             <% movies.forEach((movie)=> { %>
@@ -30,10 +30,10 @@
                                 <% }); %>
                         </ul>
                         <% } %>
-                        <h2 style="width: 100%;">Actores</h2>
+                        <h2 style="width: 100%; text-align: left;">Actores</h2>
                             <!-- Actors Section -->
                             <% if (actors.length===0) { %>
-                                <p style="width: 100%;">No se encontraron actores.</p>
+                                <p style="width: 100%; text-align: left;">No se encontraron actores.</p>
                                 <% } else { %>
                                     <ul style="width: 100%;">
                                         <% actors.forEach((actor)=> { %>
@@ -44,10 +44,10 @@
                                     </ul>
                                     <% } %>
 
-                                    <h2 style="width: 100%;">Directores</h2>
+                                    <h2 style="width: 100%; text-align: left;">Directores</h2>
                                         <!-- Directors Section -->
                                         <% if (directors.length===0) { %>
-                                            <p style="width: 100%;">No se encontraron directores.</p>
+                                            <p style="width: 100%; text-align: left;">No se encontraron directores.</p>
                                             <% } else { %>
                                                 <ul style="width: 100%;">
                                                     <% directors.forEach((director)=> { %>
