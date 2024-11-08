@@ -17,10 +17,35 @@
 </header>
 
 <body>
-    <div id="short_data" style="margin-bottom: 30px; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-evenly; text-align: center; width: 85%;">
-        <h1>
+    <div style="width: 85%; display: flex; justify-content: center; position: relative;">
+        <% if (isLoggedIn) { %>
+            <h1>
+                <div style="margin: 0 30px; align-self: center; color: transparent;">
+                    <i class="fas fa-bookmark"></i> <!-- Bookmark icon -->
+                </div>
+            </h1>
+        <% } %>
+        
+        <h1 style="margin: 0 15px; align-self: center;">
             <%= movie.title %>
         </h1>
+        
+        <!--Boton para salvar las peliculas -->
+        <% if (isLoggedIn) { %>
+            <h1>
+                <div style="margin: 0 30px; align-self: center;">
+                    <a href="/pelicula/<%= movie.id %>/saved-list" style="text-decoration: none;">
+                        <% if (movie.saved) { %>
+                            <i class="fas fa-bookmark"></i> <!-- Bookmark icon -->
+                        <% } else { %>
+                            <i class="fa-regular fa-bookmark"></i> <!-- Empty bookmark icon -->
+                        <% } %>
+                    </a>
+                </div>
+            </h1>
+        <% } %>
+    </div>
+    <div id="short_data" style="margin-bottom: 30px; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: space-evenly; text-align: center; width: 85%;">
         <h3 style="width: 30%; order: 1;">Dirigida por</h3>
         <ul style="width: 30%; order: 2;">
             <% if (movie.directors.length == 0) { %>
@@ -144,17 +169,6 @@
             <% } %>
         </ul>
     </div>
-
-    <!--Boton para salvar las peliculas -->
-    <% if (isLoggedIn) { %>
-        <div style="width: 85%; margin: 30px 0;">
-            <a href="/pelicula/<%= movie.id %>/saved-list" style="text-decoration: none;">
-                <i class="fas fa-bookmark"></i> <!-- Bookmark icon -->
-                Guardar en favoritos
-            </a>
-        </div>
-    <% } %>
-
     <p></p>
     <div id="inicio"><a href="/">Inicio</a></div>
 </body>
