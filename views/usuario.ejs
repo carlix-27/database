@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Usuario</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file if needed -->
+    <link rel="stylesheet" href="/header.css">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script>
         function confirmLogout() {
             // Show confirmation dialog
@@ -17,10 +19,11 @@
     </script>
 </head>
 <body>
-    <div class="container">
-        <h1>Bienvenido, <%= user.name %></h1>
-        <p>Tu correo: <%= user.email %></p>
-        <p>Tu usuario: <%= user.username %></p>
+    <%- include('./partials/header') %>
+    <div id="body">
+        <h1>Bienvenido, <%= userData.name %></h1>
+        <p>Tu correo: <%= userData.email %></p>
+        <p>Tu usuario: <%= userData.username %></p>
 
         <h2>Reseñas escritas:</h2>
         <ul>

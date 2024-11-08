@@ -700,7 +700,9 @@ app.get('/user-admin', (req, res) => {
 
 // Crea la página usuario
 app.get('/usuario', (req, res) => {
-    if (req.session.isLoggedIn) {
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
+    if (isLoggedIn) {
         const userId = req.session.userId; // Obtiene el ID del usuario conectado desde la sesión
 
         // Consulta para obtener datos específicos del usuario
@@ -739,7 +741,7 @@ app.get('/usuario', (req, res) => {
                                 res.status(500).send('Error al obtener las películas favoritas del usuario.');
                             } else {
                                 // Renderiza la página del usuario con datos específicos del usuario, reseñas y películas favoritas
-                                res.render('usuario', { user: userData, reviews: reviews, favorites: favorites });
+                                res.render('usuario', { userData: userData, reviews: reviews, favorites: favorites, user, isLoggedIn });
                             }
                         });
                     }
