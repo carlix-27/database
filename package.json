@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js",
-    "user": "sqlite3 movies.db < CreateUserTable.sql"
+    "user": "sqlite3 movies.db < CreateUserTable.sql",
+    "reviews": "sqlite3 movies.db < CreateMovieReview.sql",
+    "savedlist": "sqlite3 movies.db < CreateSavedList.sql"
   },
   "keywords": [],
   "author": "",
