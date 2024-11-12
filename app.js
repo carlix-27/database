@@ -553,10 +553,12 @@ app.get('/director/:id', (req, res) => {
 
 //creacion de usuario
 app.get('/sign-up', (req, res) => {
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
     if (req.session.isLoggedIn) {
         res.redirect('/');
     } else {
-        res.render('newUser');
+        res.render('newUser', { isLoggedIn, user });
     }
 });
 
@@ -616,10 +618,12 @@ app.post('/new-user', (req, res) => {
 });
 
 app.get('/sign-in', (req, res) => {
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
     if (req.session.isLoggedIn) {
         res.redirect('/');
     } else {
-        res.render('login');
+        res.render('login', { isLoggedIn, user });
     }
 });
 

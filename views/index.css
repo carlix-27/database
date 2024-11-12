@@ -8,11 +8,9 @@
   height: calc(100vh - 100px);
 }
 
-body>h1 {
-  font-size: 36px;
+#body>h1 {
+  font-size: 40px;
   color: #333333;
-  margin-bottom: 100px;
-  /* Agregamos margen inferior para separar del input */
 }
 
 form {
