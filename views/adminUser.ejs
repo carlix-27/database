@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Administration</title>
+    <link rel="stylesheet" href="/header.css">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
-
 <style>
     table {
         border-collapse: collapse;
@@ -18,13 +20,16 @@
 </style>
 
 <body>
+    <%- include('./partials/header') %>
+        <div id="body">
     <h1>User Administration</h1>
 
     <!-- Display user information -->
-    <table>
+    <table style="width: 85%; text-align: center;">
         <tr>
             <th>Username</th>
             <th>Email</th>
+            <th>Admin</th>
             <th>Actions</th>
         </tr>
         <% if (users.length != 0) { %>
@@ -34,39 +39,47 @@
                     <td><%= user.username %></td>
                     <td><%= user.email %></td>
                     <td>
+                        <% if (user.isAdmin) { %>
+                            Yes
+                        <% } else { %>
+                            No
+                        <% } %>
+                    <td>
+
+                         <!-- Make Admin Button (Only for SuperAdmin) -->
+                         <% if (isSuperAdmin) { %>
+                            <% if (user.isAdmin) { %>
+                                <form method="POST" action="/user-admin/remove-admin/<%= user.userId %>" style="display:inline;">
+                                    <button type="submit" style="width: 150px; background-color:darkcyan;">Remove Admin</button>
+                                </form>
+                            <% } else { %>
+                                <form method="POST" action="/user-admin/make-admin/<%= user.userId %>" style="display:inline;">
+                                    <button type="submit" style="width: 150px; background-color:darkcyan;">Make Admin</button>
+                                </form>
+                            <% } %>
+                        <% } %>
+                        
+                        <!-- Change Username Form -->
+                        <form method="POST" action="/user-admin/change-username/<%= user.userId %>" style="display:inline;">
+                            <input id="text" type="text" name="newUser" placeholder="New Username" required>
+                            <button type="submit">Change Username</button>
+                        </form>
+
                         <!-- Reset Password Button -->
                         <form method="POST" action="/user-admin/reset-pass/<%= user.userId %>" style="display:inline;">
                             <button type="submit">Reset Password</button>
                         </form>
 
-                        <!-- Change Username Form -->
-                        <form method="POST" action="/user-admin/change-username/<%= user.userId %>" style="display:inline;">
-                            <input type="text" name="newUser" placeholder="New Username" required>
-                            <button type="submit">Change Username</button>
+                        <!-- Delete Reviews Button -->
+                        <form method="POST" action="/user-admin/delete-reviews/<%= user.userId %>" style="display:inline;">
+                            <button type="submit" onclick="return confirm('¿Estás seguro que deseas borrar las reseñas del usuario \'<%= user.username %>\'? \nEl cambio es irreversible.')" style="background-color: rgb(223, 34, 34);">Delete Reviews</button>
                         </form>
 
                         <!-- Delete User Button -->
                         <form method="POST" action="/user-admin/delete-user/<%= user.userId %>" style="display:inline;">
-                            <button type="submit">Delete User</button>
+                            <button type="submit" onclick="return confirm('¿Estás seguro que deseas borrar al usuario \'<%= user.username %>\'? \nEl cambio es irreversible.')" style="background-color: rgb(223, 34, 34);">Delete User</button>
                         </form>
 
-                        <!-- Delete Reviews Button -->
-                        <form method="POST" action="/user-admin/delete-reviews/<%= user.userId %>" style="display:inline;">
-                            <button type="submit">Delete Reviews</button>
-                        </form>
-
-                        <!-- Make Admin Button (Only for SuperAdmin) -->
-                        <% if (isSuperAdmin) { %>
-                            <% if (user.isAdmin) { %>
-                                <form method="POST" action="/user-admin/remove-admin/<%= user.userId %>" style="display:inline;">
-                                    <button type="submit">Remove Admin</button>
-                                </form>
-                            <% } else { %>
-                                <form method="POST" action="/user-admin/make-admin/<%= user.userId %>" style="display:inline;">
-                                    <button type="submit">Make Admin</button>
-                                </form>
-                            <% } %>
-                        <% } %>
                     </td>
                 </tr>
             <% }) %>
@@ -78,6 +91,7 @@
     </table>
 
     <!-- Go back to main page or logout button -->
-    <a href="/">Go back</a>
+    <a href="/" style="margin-top: 20px;">Inicio</a>
+    </div>
 </body>
 </html>

@@ -89,7 +89,7 @@ li a:hover {
     padding: 50px; /* Agregar un poco de espacio interior para que se vea mejor */
 }
 
-input[type="text"] {
+#text {
     padding: 10px;
     width: 300px;
     border: 1px solid #ccc;

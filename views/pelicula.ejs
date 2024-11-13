@@ -181,7 +181,7 @@
                 <h3>Reseñas de usuarios</h3>
                 <%if(isLoggedIn ){ %>
                     <form style="margin-top: 15px;" action="/pelicula/<%= movie.id %>/review" method="POST">
-                        <input type="text" name="review" placeholder="Escribi tu reseña (Opcional)..." />
+                        <input id="text" type="text" name="review" placeholder="Escribi tu reseña (Opcional)..." />
                         <button type="submit">Agregar</button>
                         <div style="display: flex; flex-direction: row; flex-wrap: wrap; width: 30%; justify-content: space-around; text-align: center; margin-top: 10px; font-size: 20px;">
                             <div style="display: flex; width: 100%;">

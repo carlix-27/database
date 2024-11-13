@@ -1,21 +1,31 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Resultado de la Búsqueda</title>
+    <link rel="stylesheet" href="/header.css">
     <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
+
 <body>
-<h1>Resultado de la Búsqueda por Keywords</h1>
-<% if (movies.length === 0) { %>
-    <p>No hay resultados.</p>
-<% } else { %>
-    <ul>
-        <% movies.forEach((movie) => { %>
-            <li><a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %></a></li>
-        <% }); %>
-    </ul>
-<% } %>
-<p></p>
-<div id="inicio"><a href="/">Inicio</a></div>
+    <%- include('./partials/header') %>
+        <div id="body">
+            <h1 style="margin-top: 50px;">Resultado de la Búsqueda por Keywords</h1>
+            <% if (movies.length===0) { %>
+                <p>No hay resultados.</p>
+                <% } else { %>
+                    <ul style="width: 85%;">
+                        <% movies.forEach((movie)=> { %>
+                            <li><a href="/pelicula/<%= movie.movie_id %>">
+                                    <%= movie.title %>
+                                </a></li>
+                            <% }); %>
+                    </ul>
+                    <% } %>
+                        <p></p>
+                        <div id="inicio"><a href="/">Inicio</a></div>
+        </div>
 </body>
+
 </html>

@@ -33,20 +33,25 @@
     <%- include('./partials/header') %>
         <div id="body" style="justify-content: flex-start;">
             <h1 style="margin-bottom: 40px;">Bienvenido, <%= userData.name %>!</h1>
+            <% if (isAdmin) { %>
+                <form action="/user-admin" method="get">
+                    <button style="margin-bottom: 30px;" type="submit">Administrar Usuarios</button>
+                </form>
+            <% } %>
             <div
                 style="display: flex; flex-direction: row; justify-content: space-around; width: 85%; flex-wrap: wrap;">
                 <div style="width: 40%; text-align: center; margin-bottom: 40px;">
-                    <h2>Información de cuenta</h2>
-                    <h3><i class="fa-solid fa-envelope" style="margin-right: 5px;"></i>
+                    <h2 >Información de cuenta</h2>
+                    <h3 style="text-align: left;"><i class="fa-solid fa-envelope" style="margin-right: 5px;"></i>
                         <%= userData.email %><br>
                     </h3>
-                    <h3><i class="fa-solid fa-user" style="margin-right: 5px;"></i>
+                    <h3 style="text-align: left;"><i class="fa-solid fa-user" style="margin-right: 5px; text-align: left;"></i>
                         <%= userData.username %>
                     </h3>
                 </div>
-                <div style="width: 40%; text-align: center; margin-bottom: 40px;">
+                <div style="width: 55%; text-align: center; margin-bottom: 40px;">
                     <h2>Películas favoritas</h2>
-                    <ul id="saved">
+                    <ul id="saved" style="text-align: left; list-style:disc;">
                         <% favorites.forEach(favorite=> { %>
                             <li>
                                 <a href="/pelicula/<%= favorite.movie_id %>">

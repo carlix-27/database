@@ -93,7 +93,7 @@ button[type="submit"] {
     background-color: #0056b3;
   }
 
-  input[type="text"] {
+  #text {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
