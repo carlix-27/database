@@ -656,7 +656,38 @@ app.get('/log-out', (req, res) => {
     res.redirect('/');
 });
 
-app.get('/user-admin', (req, res) => {
+
+app.get('/forgot-password',(req,res) =>{
+
+    if(req.session.isLoggedIn){
+        res.redirect('/');
+    } else {
+        res.render('forgotPassword');
+    }
+
+});
+
+app.post('/change-password',(req,res) =>{
+    
+    const email = req.body.email;
+    const pass  = req.body.pass
+    const query = "UPDATE user SET password = ? WHERE email == ?";
+    console.log(email,pass)
+    db.run(query,[pass,email],(err)=>{
+
+        if(err){
+            res.status(500).send('Error updating password.')
+        }else{
+            res.redirect('/sign-in');
+        }
+    });
+
+
+});
+
+
+app.get('/user-admin',(req,res) =>{
+
 
     if (req.session.isAdmin) {
 
@@ -789,7 +820,8 @@ app.post('/user-admin/change-username/:id', (req, res) => {
 
         db.run(query, [newUser, id], (err) => {
             console.log(err)
-            if (err.errno == 19) {
+            if(err != null && err.errno == 19){
+
                 res.status(409).send('Usuario ya utilizado.');
             } else if (err) {
                 res.status(500).send('Error al cambiar el usuario.')
