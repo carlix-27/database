@@ -1,33 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Películas dirigidas por <%= directorName %></title>
-    <link rel="stylesheet" href="/styles.css">
-</head>
-<body>
-<h1>Películas dirigidas por <%= directorName %></h1>
-<ul>
-    <% movies.sort((a, b) => new Date(b.release_date) - new Date(a.release_date)).forEach((movie) => { %>
-        <li><a href="/pelicula/<%= movie.movie_id %>"><%= movie.title %> (<%= new Date(movie.release_date).getFullYear() %>)</a></li>
-    <% }); %>
-</ul>
-<p></p>
-<div id="inicio"><a href="/">Inicio</a></div>
 
-<script>
-    const coll = document.getElementsByClassName('collapsible');
-    for (let i = 0; i < coll.length; i++) {
-        coll[i].addEventListener('click', function () {
-            this.classList.toggle('active');
-            const content = this.nextElementSibling;
-            if (content.style.display === 'block') {
-                content.style.display = 'none';
-            } else {
-                content.style.display = 'block';
-            }
-        });
-    }
-</script>
+<head>
+    <title>Películas dirigidas por <%= directorName %>
+    </title>
+    <link rel="stylesheet" href="/header.css">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <%- include('./partials/header') %>
+        <div id="body">
+            <h1 style="margin-top: 50px;">Películas dirigidas por <%= directorName %>
+            </h1>
+            <ul style="width: 85%;">
+                <% movies.sort((a, b)=> new Date(b.release_date) - new Date(a.release_date)).forEach((movie) => { %>
+                    <li><a href="/pelicula/<%= movie.movie_id %>">
+                            <%= movie.title %> (<%= new Date(movie.release_date).getFullYear() %>)
+                        </a></li>
+                    <% }); %>
+            </ul>
+            <p></p>
+            <div id="inicio"><a href="/">Inicio</a></div>
+        </div>
 
 </body>
+
 </html>

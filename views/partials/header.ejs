@@ -23,13 +23,13 @@
     <% } else {%>
       <div name="user" style="display: flex;align-self: space-around;">
         <h3 style="margin-right: 30px; align-self: center;">
-          <a href="/sign-in">
+          <a href="/usuario">
             <i class="fa-solid fa-user" style="margin-right: 10px;"></i>
             <%= user %>
           </a>
         </h3>
         <h3 style="margin-right: 30px; align-self: center;">
-          <a href="/log-out">
+          <a href="/log-out" onclick="return confirm('¿Estás seguro que deseas cerrar sesión?')">
             <i class="fa-solid fa-power-off" style="margin-right: 10px;"></i>
             Cerrar sesión
           </a>

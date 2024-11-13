@@ -111,6 +111,8 @@ app.get('/buscar', (req, res) => {
 // Ruta para buscar películas por keywords
 app.get('/buscar-keywords/:keyword', (req, res) => {
     const searchTerm = req.params.keyword;
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
 
     const keywords_query = `
         SELECT 
@@ -128,7 +130,7 @@ app.get('/buscar-keywords/:keyword', (req, res) => {
             console.error(err);
             res.status(500).send('Error en la búsqueda.');
         } else {
-            res.render('keywords', { movies: rows });
+            res.render('keywords', { movies: rows, isLoggedIn, user });
         }
     }
     );
@@ -416,6 +418,8 @@ app.get('/pelicula/:id', async (req, res) => {
 // Ruta para mostrar la página de un actor específico
 app.get('/actor/:id', (req, res) => {
     const actorId = req.params.id;
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
 
     // Consulta SQL para obtener las películas en las que participó el actor
     const query = `
@@ -437,7 +441,7 @@ app.get('/actor/:id', (req, res) => {
             // Obtener el nombre del actor
             const actorName = movies.length > 0 ? movies[0].actorName : '';
 
-            res.render('actor', { actorName, movies });
+            res.render('actor', { actorName, movies, isLoggedIn, user });
         }
     });
 });
@@ -522,6 +526,9 @@ app.get('/pelicula/:id/saved-list', (req, res) => {
 app.get('/director/:id', (req, res) => {
     const directorId = req.params.id;
 
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
+
     // Consulta SQL para obtener las películas dirigidas por el director
     const query = `
     SELECT DISTINCT
@@ -545,7 +552,7 @@ app.get('/director/:id', (req, res) => {
             // console.log('movies.length = ', movies.length)
             // Obtener el nombre del director
             const directorName = movies.length > 0 ? movies[0].directorName : '';
-            res.render('director', { directorName, movies });
+            res.render('director', { directorName, movies, isLoggedIn, user });
         }
     });
 });
@@ -553,10 +560,12 @@ app.get('/director/:id', (req, res) => {
 
 //creacion de usuario
 app.get('/sign-up', (req, res) => {
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
     if (req.session.isLoggedIn) {
         res.redirect('/');
     } else {
-        res.render('newUser');
+        res.render('newUser', { isLoggedIn, user });
     }
 });
 
@@ -598,7 +607,7 @@ app.post('/new-user', (req, res) => {
                                 if (err) {
                                     res.status(500).send('Error en la creacion de usuario.');
                                 } else {
-                                    res.render('login');
+                                    res.redirect('/sign-in');
                                 }
                             });
                         } else {
@@ -616,10 +625,12 @@ app.post('/new-user', (req, res) => {
 });
 
 app.get('/sign-in', (req, res) => {
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
     if (req.session.isLoggedIn) {
         res.redirect('/');
     } else {
-        res.render('login');
+        res.render('login', { isLoggedIn, user });
     }
 });
 
@@ -688,8 +699,11 @@ app.post('/change-password',(req,res) =>{
 
 app.get('/user-admin',(req,res) =>{
 
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
+    const isAdmin = req.session.isAdmin;
 
-    if (req.session.isAdmin) {
+    if (isAdmin) {
 
         let query;
         const isSuperAdmin = req.session.isSuperAdmin;
@@ -718,7 +732,7 @@ app.get('/user-admin',(req,res) =>{
                     });
 
                 });
-                res.render('adminUser', { users: users, isSuperAdmin });
+                res.render('adminUser', { users: users, isSuperAdmin, isLoggedIn, user});
             };
 
         });
@@ -731,7 +745,12 @@ app.get('/user-admin',(req,res) =>{
 
 // Crea la página usuario
 app.get('/usuario', (req, res) => {
-    if (req.session.isLoggedIn) {
+    
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
+    const isAdmin = req.session.isAdmin;
+
+    if (isLoggedIn) {
         const userId = req.session.userId; // Obtiene el ID del usuario conectado desde la sesión
 
         // Consulta para obtener datos específicos del usuario
@@ -747,7 +766,7 @@ app.get('/usuario', (req, res) => {
 
         // Consulta para obtener las películas favoritas del usuario
         const favoritesQuery = `
-            SELECT m.title AS movie_name
+            SELECT m.title AS movie_name, sl.movie_id as movie_id
             FROM saved_list sl
             JOIN movie m ON sl.movie_id = m.movie_id
             WHERE sl.user_id = ? AND sl.fav = 1; // Asegura que solo se obtengan las películas favoritas
@@ -770,7 +789,7 @@ app.get('/usuario', (req, res) => {
                                 res.status(500).send('Error al obtener las películas favoritas del usuario.');
                             } else {
                                 // Renderiza la página del usuario con datos específicos del usuario, reseñas y películas favoritas
-                                res.render('usuario', { user: userData, reviews: reviews, favorites: favorites });
+                                res.render('usuario', { userData: userData, reviews: reviews, favorites: favorites, user, isLoggedIn, isAdmin });
                             }
                         });
                     }
@@ -821,7 +840,6 @@ app.post('/user-admin/change-username/:id', (req, res) => {
         db.run(query, [newUser, id], (err) => {
             console.log(err)
             if(err != null && err.errno == 19){
-
                 res.status(409).send('Usuario ya utilizado.');
             } else if (err) {
                 res.status(500).send('Error al cambiar el usuario.')
@@ -865,7 +883,7 @@ app.post('/user-admin/delete-reviews/:id', (req, res) => {
 
         const id = req.params.id;
 
-        const query = "UPDATE movie_review SET review = null WHERE user_id = ?";
+        const query = "DELETE FROM movie_review WHERE user_id = ?";
 
         db.run(query, [id], (err) => {
             if (err) {
@@ -918,11 +936,6 @@ app.post('/user-admin/remove-admin/:id', (req, res) => {
         res.redirect('/');
     };
 });
-
-
-
-
-
 
 // Iniciar el servidor
 app.listen(port, () => {

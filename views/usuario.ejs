@@ -1,49 +1,91 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Página de Usuario</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file if needed -->
-    <script>
-        function confirmLogout() {
-            // Show confirmation dialog
-            const confirmed = confirm("¿Estás seguro de que deseas cerrar sesión?");
-            if (confirmed) {
-                // Redirect to the logout URL if confirmed
-                location.href = '/log-out'; // Adjust this URL based on your logout endpoint
-            }
+    <link rel="stylesheet" href="/header.css">
+    <link rel="stylesheet" href="/index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        ul {
+            list-style: none;
+            padding: 0;
         }
-    </script>
+
+        #saved {
+            column-count: 3;
+            column-fill: balance;
+            -moz-column-fill: balance;
+            -webkit-column-fill: balance;
+        }
+
+        a {
+            text-decoration: none;
+            color: #0078d4;
+            font-weight: bold;
+        }
+    </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Bienvenido, <%= user.name %></h1>
-        <p>Tu correo: <%= user.email %></p>
-        <p>Tu usuario: <%= user.username %></p>
-
-        <h2>Reseñas escritas:</h2>
-        <ul>
-            <% reviews.forEach(review => { %>
-                <li>
-                    <strong>Película:</strong> <%= review.movie_name %><br>
-                    <strong>Reseña:</strong> <%= review.review %><br>
-                    <strong>Calificación:</strong> <%= review.rating %>
-                </li>
-            <% }); %>
-        </ul>
-
-        <h2>Películas favoritas:</h2>
-        <ul>
-            <% favorites.forEach(favorite => { %>
-                <li>
-                    <strong>Película:</strong> <%= favorite.movie_name %>
-                </li>
-            <% }); %>
-        </ul>
-
-        <!-- Modify the button to call confirmLogout function -->
-        <button onclick="confirmLogout()">Cerrar sesión</button>
-    </div>
+    <%- include('./partials/header') %>
+        <div id="body" style="justify-content: flex-start;">
+            <h1 style="margin-bottom: 40px;">Bienvenido, <%= userData.name %>!</h1>
+            <% if (isAdmin) { %>
+                <form action="/user-admin" method="get">
+                    <button style="margin-bottom: 30px;" type="submit">Administrar Usuarios</button>
+                </form>
+            <% } %>
+            <div
+                style="display: flex; flex-direction: row; justify-content: space-around; width: 85%; flex-wrap: wrap;">
+                <div style="width: 40%; text-align: center; margin-bottom: 40px;">
+                    <h2 >Información de cuenta</h2>
+                    <h3 style="text-align: left;"><i class="fa-solid fa-envelope" style="margin-right: 5px;"></i>
+                        <%= userData.email %><br>
+                    </h3>
+                    <h3 style="text-align: left;"><i class="fa-solid fa-user" style="margin-right: 5px; text-align: left;"></i>
+                        <%= userData.username %>
+                    </h3>
+                </div>
+                <div style="width: 55%; text-align: center; margin-bottom: 40px;">
+                    <h2>Películas favoritas</h2>
+                    <ul id="saved" style="text-align: left; list-style:disc;">
+                        <% favorites.forEach(favorite=> { %>
+                            <li>
+                                <a href="/pelicula/<%= favorite.movie_id %>">
+                                    <%= favorite.movie_name %>
+                                </a>
+                            </li>
+                            <% }); %>
+                    </ul>
+                </div>
+                <div style="width: 100%; text-align: justify;">
+                    <h2>Reseñas escritas</h2>
+                    <ul style="display: flex; flex-direction: row; width: 85%; flex-wrap: wrap; margin-top: 20px;">
+                        <% if (reviews.length===0) { %>
+                            <li>Nadie ha hecho una reseña todavía. ¡Hacé la primera!</li>
+                            <% } else { %>
+                                <% reviews.forEach(review=> { %>
+                                    <!-- <div style="width: 3%; border-left: 5px solid black; height: 100%;"></div> -->
+                                    <li style="width: 95%; border-left: 15px #0078d4 solid; margin-top: 10px; border-radius: 10px;">
+                                        <p style="margin: 5px 0 0 10px;"><strong>Película:</strong>
+                                            <%= review.movie_name %>
+                                        </p>
+                                        <p style="margin: 20px 0 20px 10px;"><strong>Calificación:</strong>
+                                            <%= review.rating %>
+                                        </p>
+                                        <p style="margin: 0 0 5px 10px;"><strong>Reseña:</strong>
+                                            <%= review.review %>
+                                        </p>
+                                    </li>
+                                    <% }) %>
+                                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        </div>
 </body>
+
 </html>
