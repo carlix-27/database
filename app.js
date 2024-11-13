@@ -600,7 +600,7 @@ app.post('/new-user', (req, res) => {
                                 if (err) {
                                     res.status(500).send('Error en la creacion de usuario.');
                                 } else {
-                                    res.render('login');
+                                    res.redirect('/sign-in');
                                 }
                             });
                         } else {
@@ -704,6 +704,9 @@ app.get('/user-admin', (req, res) => {
 
 // Crea la página usuario
 app.get('/usuario', (req, res) => {
+    if (req.session.isAdmin) {
+        res.redirect('/user-admin');
+    }
     const isLoggedIn = req.session.isLoggedIn;
     const user = req.session.user;
     if (isLoggedIn) {
@@ -722,7 +725,7 @@ app.get('/usuario', (req, res) => {
 
         // Consulta para obtener las películas favoritas del usuario
         const favoritesQuery = `
-            SELECT m.title AS movie_name
+            SELECT m.title AS movie_name, sl.movie_id as movie_id
             FROM saved_list sl
             JOIN movie m ON sl.movie_id = m.movie_id
             WHERE sl.user_id = ? AND sl.fav = 1; // Asegura que solo se obtengan las películas favoritas
