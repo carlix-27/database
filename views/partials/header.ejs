@@ -1,0 +1,39 @@
+<header>
+  <h1 style="text-decoration: none;">
+    <a href="/">
+      <i class="fas fa-film" style="margin-right: 10px;"></i>
+      MovieWeb
+    </a>
+  </h1>
+  <% if (!isLoggedIn) { %>
+    <div name="user" style="display: flex;align-self: space-around;">
+      <h3 style="margin-right: 30px; align-self: center;">
+        <a href="/sign-up">
+          <i class="fa-solid fa-plus"></i>
+          Registrarse
+        </a>
+      </h3>
+      <h3 style="margin-right: 30px; align-self: center;">
+        <a href="/sign-in">
+          <i class="fa-solid fa-right-to-bracket"></i>
+          Ingresar
+        </a>
+      </h3>
+    </div>
+    <% } else {%>
+      <div name="user" style="display: flex;align-self: space-around;">
+        <h3 style="margin-right: 30px; align-self: center;">
+          <a href="/sign-in">
+            <i class="fa-solid fa-user" style="margin-right: 10px;"></i>
+            <%= user %>
+          </a>
+        </h3>
+        <h3 style="margin-right: 30px; align-self: center;">
+          <a href="/log-out">
+            <i class="fa-solid fa-power-off" style="margin-right: 10px;"></i>
+            Cerrar sesión
+          </a>
+        </h3>
+      </div>
+      <% } %>
+</header>
