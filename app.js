@@ -789,10 +789,8 @@ app.post('/delete-reviews/:user/:movie', (req, res) => {
     const movieId = req.params.movie;
     const isLoggedIn = req.session.isLoggedIn;
 
+    const query = "DELETE FROM movie_review WHERE user_id = ? and movie_id = ?";
     if (isLoggedIn) {
-
-        const query = "DELETE FROM movie_review WHERE user_id = ? and movie_id = ?";
-
         db.run(query, [userId, movieId], (err) => {
             if (err) {
                 res.status(500).send('Error al borrar las reseñas.')
