@@ -624,7 +624,7 @@ app.post('/log-in', (req, res) => {
         if (err) {
             res.status(500).send('Error al verificar el usuario.');
         } else if (!row) {
-            res.status(400).send('Usuario no existe');
+            res.status(400).send('Credenciales incorrectas.');
         } else if (pass === row.password) {
             req.session.user = row.username;//guarda el usuario
             req.session.userId = row.id; //guarda el id
@@ -633,7 +633,7 @@ app.post('/log-in', (req, res) => {
             if (row.id == 1) { req.session.isSuperAdmin = true };
             res.redirect('/');
         } else {
-            res.status(400).send('Contraseña incorrecta.');
+            res.status(400).send('Credenciales incorrectas.');
         };
     });
 });
