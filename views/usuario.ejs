@@ -32,16 +32,16 @@
 <body>
     <%- include('./partials/header') %>
         <div id="body" style="justify-content: flex-start;">
-            <h1 style="margin-bottom: 40px;">Bienvenido, <%= userData.name %>!</h1>
+            <h1 style="margin-bottom: 40px; align-self:auto; width: 85%;">Bienvenido, <%= userData.name %>!</h1>
             <% if (isAdmin) { %>
                 <form action="/user-admin" method="get">
                     <button style="margin-bottom: 30px;" type="submit">Administrar Usuarios</button>
                 </form>
             <% } %>
             <div
-                style="display: flex; flex-direction: row; justify-content: space-around; width: 85%; flex-wrap: wrap;">
-                <div style="width: 40%; text-align: center; margin-bottom: 40px;">
-                    <h2 >Información de cuenta</h2>
+                style="display: flex; flex-direction: row; justify-content: space-between; width: 85%; flex-wrap: wrap;">
+                <div style="width: 40%; text-align: center; margin-bottom: 40px; align-self: flex-start;">
+                    <h2 style="text-align: left;">Información de cuenta</h2>
                     <h3 style="text-align: left;"><i class="fa-solid fa-envelope" style="margin-right: 5px;"></i>
                         <%= userData.email %><br>
                     </h3>
@@ -50,8 +50,11 @@
                     </h3>
                 </div>
                 <div style="width: 55%; text-align: center; margin-bottom: 40px;">
-                    <h2>Películas favoritas</h2>
+                    <h2 style="text-align: left;">Películas favoritas</h2>
                     <ul id="saved" style="text-align: left; list-style:disc;">
+                        <% if (favorites.length===0) { %>
+                            <li style="list-style: none;">No has guardado ninguna película como favorita.</li>
+                        <% } %>
                         <% favorites.forEach(favorite=> { %>
                             <li>
                                 <a href="/pelicula/<%= favorite.movie_id %>">
@@ -68,18 +71,23 @@
                             <li>Nadie ha hecho una reseña todavía. ¡Hacé la primera!</li>
                             <% } else { %>
                                 <% reviews.forEach(review=> { %>
-                                    <!-- <div style="width: 3%; border-left: 5px solid black; height: 100%;"></div> -->
-                                    <li style="width: 95%; border-left: 15px #0078d4 solid; margin-top: 10px; border-radius: 10px;">
-                                        <p style="margin: 5px 0 0 10px;"><strong>Película:</strong>
-                                            <%= review.movie_name %>
-                                        </p>
-                                        <p style="margin: 20px 0 20px 10px;"><strong>Calificación:</strong>
-                                            <%= review.rating %>
-                                        </p>
-                                        <p style="margin: 0 0 5px 10px;"><strong>Reseña:</strong>
-                                            <%= review.review %>
-                                        </p>
-                                    </li>
+                                    <div style="display: flex; flex-direction: row; align-items: center; width: 100%;">
+                                        <form action="/delete-reviews/<%= userData.id %>/<%= review.movie_id %>" method="POST">
+                                            <a href="javascript:;" onclick="this.parentNode.submit()"><i class="fa-solid fa-trash" style="margin-right: 5px;"></i></a>
+                                        </form>
+                                                                      
+                                        <li style="width: 95%; border-left: 15px #0078d4 solid; margin-top: 10px; border-radius: 10px;">
+                                            <p style="margin: 5px 0 0 10px;"><strong>Película:</strong>
+                                                <%= review.movie_name %>
+                                            </p>
+                                            <p style="margin: 20px 0 20px 10px;"><strong>Calificación:</strong>
+                                                <%= review.rating %>
+                                            </p>
+                                            <p style="margin: 0 0 5px 10px;"><strong>Reseña:</strong>
+                                                <%= review.review %>
+                                            </p>
+                                        </li>
+                                    </div>
                                     <% }) %>
                                         <% } %>
                     </ul>
