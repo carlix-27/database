@@ -37,8 +37,8 @@ app.set('view engine', 'ejs');
 
 // Ruta para la página de inicio
 app.get('/', (req, res) => {
-    const isLoggedIn = req.session.isLoggedIn;
-    const user = req.session.user;
+    const isLoggedIn = req.session.isLoggedIn; // Verifica si el usuario está conectado
+    const user = req.session.user; // Obtiene el nombre de usuario de la sesión
     res.render('index', { isLoggedIn, user });
 });
 
@@ -49,8 +49,8 @@ app.get('/buscar', (req, res) => {
     const isLoggedIn = req.session.isLoggedIn;
     const user = req.session.user;
 
-    if (filterSearch) {
-        res.redirect(`/buscar-keywords/${searchTerm}`);
+    if (filterSearch) { // Si hay un filtro de búsqueda
+        res.redirect(`/buscar-keywords/${searchTerm}`); // Redirige a la ruta de búsqueda de keywords
         return
     }
 
@@ -179,7 +179,7 @@ app.get('/pelicula/:id', async (req, res) => {
         WHERE movie.movie_id = ?
     `;
 
-
+    // Consulta SQL para obtener las keywords de la película
     const keywords_query = `
         SELECT 
             movie.*, 
@@ -189,7 +189,7 @@ app.get('/pelicula/:id', async (req, res) => {
         LEFT JOIN keyword ON movie_keywords.keyword_id = keyword.keyword_id
         WHERE movie.movie_id = ?;
     `;
-
+    // Consulta SQL para obtener los reviews de la película
     const reviews_query = `
         SELECT movie_review.rating, movie_review.review, user.username
         from movie
@@ -197,7 +197,7 @@ app.get('/pelicula/:id', async (req, res) => {
         left join user on movie_review.user_id = user.id
         where movie.movie_id = ?;
     `;
-
+    // Consulta SQL para verificar si la película está en la lista de favoritos del usuario
     const saved_query = `
         SELECT fav 
         FROM saved_list 
@@ -254,7 +254,7 @@ app.get('/pelicula/:id', async (req, res) => {
                                                 reviews: [],
                                                 saved: saved[0] ? saved[0].fav : 0
                                             };
-
+                                            // Agregar los reviews a la lista de reviews
                                             reviews_rows.forEach((row) => {
                                                 if (row.review) {
                                                     movieData.reviews.push({
@@ -265,7 +265,7 @@ app.get('/pelicula/:id', async (req, res) => {
                                                 }
                                             });
 
-
+                                            // Agregar las keywords a la lista de keywords
                                             keyword_rows.forEach((row) => {
                                                 if (row.keyword_name) {
                                                     // Verificar si ya existe una entrada con los mismos valores en el elenco
@@ -281,7 +281,7 @@ app.get('/pelicula/:id', async (req, res) => {
                                                 }
                                             });
 
-                                            // Crear un objeto para almacenar directores
+                                            // Agregar los datos de elenco y crew a las listas correspondientes
                                             crew_cast_rows.forEach((row) => {
                                                 if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
                                                     // Verificar si ya existe una entrada con los mismos valores en directors
@@ -303,7 +303,7 @@ app.get('/pelicula/:id', async (req, res) => {
                                                 }
                                             });
 
-                                            // Crear un objeto para almacenar writers
+                                            // Agregar los datos de elenco y crew a las listas correspondientes
                                             crew_cast_rows.forEach((row) => {
                                                 if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
                                                     // Verificar si ya existe una entrada con los mismos valores en writers
@@ -325,7 +325,7 @@ app.get('/pelicula/:id', async (req, res) => {
                                                 }
                                             });
 
-                                            // Crear un objeto para almacenar el elenco
+                                            // Agregar los datos de elenco y crew a las listas correspondientes
                                             crew_cast_rows.forEach((row) => {
                                                 if (row.actor_id && row.actor_name && row.character_name) {
                                                     // Verificar si ya existe una entrada con los mismos valores en el elenco
@@ -345,7 +345,7 @@ app.get('/pelicula/:id', async (req, res) => {
                                                 }
                                             });
 
-                                            // Crear un objeto para almacenar el crew
+                                            // Agregar los datos de elenco y crew a las listas correspondientes
                                             crew_cast_rows.forEach((row) => {
                                                 if (row.crew_member_id && row.crew_member_name && row.department_name && row.job) {
                                                     // Verificar si ya existe una entrada con los mismos valores en el crew
@@ -370,7 +370,7 @@ app.get('/pelicula/:id', async (req, res) => {
                                                 }
                                             });
 
-                                            // Crear un objeto para almacenar el genero
+                                            // Agregar los datos de genero a la lista de idiomas
                                             small_data_rows.forEach((row) => {
                                                 if (row.genre_name) {
                                                     const isDuplicate = movieData.genre.some((genre) =>
@@ -439,7 +439,7 @@ app.post('/pelicula/:id/review', (req, res) => {
     const review = req.body.review;
     const rating = req.body.rating; // Viene el value asociado al req.body.rating en front el radio.
 
-
+    // Consulta SQL para verificar si el usuario ya dejó un review para la película
     const checkReviewQuery = 'select * FROM movie_review where movie_review.movie_id = ? and movie_review.user_id =?';
 
     // Consulta SQL para agregar una review
@@ -467,7 +467,7 @@ app.get('/pelicula/:id/saved-list', (req, res) => {
         const userId = req.session.userId;
         const movieId = req.params.id;
 
-        // Query to check if the movie is already in the user's saved list
+        // Consulta SQL para verificar si la película ya está en la lista de favoritos del usuario
         const checkFavoriteQuery = 'SELECT * FROM saved_list WHERE user_id = ? AND movie_id = ?';
 
         db.get(checkFavoriteQuery, [userId, movieId], (err, row) => {
@@ -475,34 +475,32 @@ app.get('/pelicula/:id/saved-list', (req, res) => {
                 res.status(500).send('Error al verificar la película en la lista de favoritos.');
             } else {
                 if (row) {
-                    // Movie is already in the saved list, so remove it
+                    // Consulta SQL para eliminar la película de la lista de favoritos
                     const deleteFavoriteQuery = 'DELETE FROM saved_list WHERE user_id = ? AND movie_id = ?';
                     db.run(deleteFavoriteQuery, [userId, movieId], function (err) {
                         if (err) {
                             res.status(500).send('Error al eliminar la película de la lista de favoritos.');
                         } else {
-                            res.redirect(`/pelicula/${movieId}`); // Redirect back to the movie page
+                            res.redirect(`/pelicula/${movieId}`);
                         }
                     });
                 } else {
-                    // Movie is not in the saved list, so add it
+                    // Consulta SQL para agregar la película a la lista de favoritos
                     const insertFavoriteQuery = 'INSERT INTO saved_list (user_id, movie_id, fav) VALUES (?, ?, ?)';
-                    db.run(insertFavoriteQuery, [userId, movieId, 1], function (err) { // Set fav to 1 (true) when adding
+                    db.run(insertFavoriteQuery, [userId, movieId, 1], function (err) {
                         if (err) {
                             res.status(500).send('Error al guardar la película en la lista de favoritos.');
                         } else {
-                            res.redirect(`/pelicula/${movieId}`); // Redirect back to the movie page
+                            res.redirect(`/pelicula/${movieId}`);
                         }
                     });
                 }
             }
         });
     } else {
-        res.redirect('/sign-in'); // Redirect to sign-in if the user is not logged in
+        res.redirect('/sign-in');
     }
 });
-
-
 
 // Ruta para mostrar la página de un director específico
 app.get('/director/:id', (req, res) => {
@@ -522,9 +520,6 @@ app.get('/director/:id', (req, res) => {
     WHERE movie_crew.job = 'Director' AND movie_crew.person_id = ?;
   `;
 
-
-    // console.log('query = ', query)
-
     // Ejecutar la consulta
     db.all(query, [directorId], (err, movies) => {
         if (err) {
@@ -540,7 +535,7 @@ app.get('/director/:id', (req, res) => {
 });
 
 
-//creacion de usuario
+// Ruta para registrarse
 app.get('/sign-up', (req, res) => {
     const isLoggedIn = req.session.isLoggedIn;
     const user = req.session.user;
@@ -551,6 +546,7 @@ app.get('/sign-up', (req, res) => {
     }
 });
 
+// Crear un nuevo usuario
 app.post('/new-user', (req, res) => {
 
     const checkUserQuery = 'select * FROM user where username = ?';
@@ -568,7 +564,6 @@ app.post('/new-user', (req, res) => {
     const passConfirm = req.body.passwordConfirmation;
 
     //confirmar que los campos esten completos y que las contraseñas sean iguales
-
 
     if (name.length != 0 && mail.length != 0 && user.length != 0 && pass != 0) {
         if (passConfirm != pass) {
@@ -606,6 +601,7 @@ app.post('/new-user', (req, res) => {
     }
 });
 
+// Ruta para iniciar sesión
 app.get('/sign-in', (req, res) => {
     const isLoggedIn = req.session.isLoggedIn;
     const user = req.session.user;
@@ -649,7 +645,7 @@ app.get('/log-out', (req, res) => {
     res.redirect('/');
 });
 
-
+// Ruta para recuperar la contraseña
 app.get('/forgot-password',(req,res) =>{
     const isLoggedIn = req.session.isLoggedIn;
     const user = req.session.user;
@@ -662,6 +658,7 @@ app.get('/forgot-password',(req,res) =>{
 
 });
 
+// Ruta para cambiar la contraseña
 app.post('/change-password',(req,res) =>{
     
     const email = req.body.email;
@@ -680,7 +677,7 @@ app.post('/change-password',(req,res) =>{
 
 });
 
-
+// Ruta para la administración de usuarios
 app.get('/user-admin',(req,res) =>{
 
     const isLoggedIn = req.session.isLoggedIn;
@@ -692,6 +689,7 @@ app.get('/user-admin',(req,res) =>{
         let query;
         const isSuperAdmin = req.session.isSuperAdmin;
 
+        // Consulta para obtener todos los usuarios, sólo el admin puede ver todos los usuarios
         if (req.session.isSuperAdmin) {
             query = 'select * FROM user WHERE id != 1';
         } else {
@@ -785,7 +783,7 @@ app.get('/usuario', (req, res) => {
     }
 });
 
-
+// Ruta para blanquear la contraseña a 123
 app.post('/user-admin/reset-pass/:id', (req, res) => {
 
     if (req.session.isAdmin) {
@@ -806,10 +804,9 @@ app.post('/user-admin/reset-pass/:id', (req, res) => {
     } else {
         res.redirect('/');
     };
-
-
 });
 
+// Ruta para cambiar el nombre de usuario
 app.post('/user-admin/change-username/:id', (req, res) => {
 
     if (req.session.isAdmin) {
@@ -836,10 +833,9 @@ app.post('/user-admin/change-username/:id', (req, res) => {
     } else {
         res.redirect('/');
     };
-
-
 });
 
+// Ruta para cambiar el nombre de usuario
 app.post('/user-admin/delete-user/:id', (req, res) => {
 
     if (req.session.isAdmin) {
@@ -861,6 +857,7 @@ app.post('/user-admin/delete-user/:id', (req, res) => {
     };
 });
 
+// Ruta para borrar las reseñas de un usuario
 app.post('/user-admin/delete-reviews/:id', (req, res) => {
 
     if (req.session.isAdmin) {
@@ -881,6 +878,7 @@ app.post('/user-admin/delete-reviews/:id', (req, res) => {
     };
 });
 
+// Ruta para hacer admin a un usuario
 app.post('/user-admin/make-admin/:id', (req, res) => {
 
 
@@ -901,6 +899,7 @@ app.post('/user-admin/make-admin/:id', (req, res) => {
     };
 });
 
+// Ruta para remover el rol de admin a un usuario
 app.post('/user-admin/remove-admin/:id', (req, res) => {
 
 
