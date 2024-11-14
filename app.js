@@ -63,6 +63,7 @@ app.get('/buscar', (req, res) => {
     const actorsQuery = `
         SELECT DISTINCT person.person_id AS person_id, person.person_name AS person_name
         FROM person
+        INNER JOIN main.movie_cast ON person.person_id = movie_cast.person_id
         WHERE person_name LIKE ?
     `;
 
@@ -795,16 +796,20 @@ app.post('/delete-reviews/:user/:movie', (req, res) => {
 
     const userId = req.params.user;
     const movieId = req.params.movie;
+    const isLoggedIn = req.session.isLoggedIn;
 
     const query = "DELETE FROM movie_review WHERE user_id = ? and movie_id = ?";
-
-    db.run(query, [userId, movieId], (err) => {
-        if (err) {
-            res.status(500).send('Error al borrar las reseñas.')
-        } else {
-            res.redirect('/usuario');
-        }
-    });
+    if (isLoggedIn) {
+        db.run(query, [userId, movieId], (err) => {
+            if (err) {
+                res.status(500).send('Error al borrar las reseñas.')
+            } else {
+                res.redirect('/usuario');
+            }
+        });
+    } else {
+        res.redirect('/');
+    }
 
 });
 
