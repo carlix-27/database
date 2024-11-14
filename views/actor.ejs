@@ -2,7 +2,11 @@
 <html>
 
 <head>
-    <title>Películas con <%= actorName %>
+    <% if ({actorName} != "") { %>
+        <title>Películas con <%= actorName %>
+    <% } else { %>
+        <title>No se encontraron peliculas con el actor.>
+    <% } %>
     </title>
     <link rel="stylesheet" href="/header.css">
     <link rel="stylesheet" href="/styles.css">
@@ -12,7 +16,11 @@
 <body>
     <%- include('./partials/header') %>
     <div id="body">
-            <h1 style="margin-top: 50px;">Películas con "<%= actorName %>"
+            <% if ({actorName} > 0) { %>
+                <h1 style="margin-top: 50px;">Películas con "<%= actorName %>"
+            <% } else { %>
+                <h1 style="margin-top: 50px;">No se encontraron peliculas con el actor.
+            <% } %>
             </h1>
             <ul style="width: 85%;">
                 <% movies.sort((a, b)=> new Date(b.release_date) - new Date(a.release_date)).forEach((movie) => { %>
