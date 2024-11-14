@@ -136,8 +136,8 @@ app.get('/pelicula/:id', async (req, res) => {
     const isLoggedIn = req.session.isLoggedIn;
     const user = req.session.user;
 
-    console.log('user:' , user);
-    
+    console.log('user:', user);
+
 
     // Consulta SQL para obtener los datos de elenco y crew
     const crew_cast_query = `
@@ -414,6 +414,13 @@ app.get('/actor/:id', (req, res) => {
         WHERE movie_cast.person_id = ?;
   `;
 
+    const actor_query = `
+        SELECT DISTINCT
+            person.person_name as actorName,
+        FROM person
+        WHERE person_id = ?;
+    `;
+
     // Ejecutar la consulta
     db.all(query, [actorId], (err, movies) => {
         if (err) {
@@ -646,11 +653,11 @@ app.get('/log-out', (req, res) => {
 });
 
 // Ruta para recuperar la contraseña
-app.get('/forgot-password',(req,res) =>{
+app.get('/forgot-password', (req, res) => {
     const isLoggedIn = req.session.isLoggedIn;
     const user = req.session.user;
 
-    if(isLoggedIn){
+    if (isLoggedIn) {
         res.redirect('/');
     } else {
         res.render('forgotPassword', { isLoggedIn, user });
@@ -659,17 +666,17 @@ app.get('/forgot-password',(req,res) =>{
 });
 
 // Ruta para cambiar la contraseña
-app.post('/change-password',(req,res) =>{
-    
-    const email = req.body.email;
-    const pass  = req.body.pass
-    const query = "UPDATE user SET password = ? WHERE email = ?";
-    console.log(email,pass)
-    db.run(query,[pass,email],(err)=>{
+app.post('/change-password', (req, res) => {
 
-        if(err){
+    const email = req.body.email;
+    const pass = req.body.pass
+    const query = "UPDATE user SET password = ? WHERE email = ?";
+    console.log(email, pass)
+    db.run(query, [pass, email], (err) => {
+
+        if (err) {
             res.status(500).send('Error updating password.')
-        }else{
+        } else {
             res.redirect('/sign-in');
         }
     });
@@ -678,7 +685,7 @@ app.post('/change-password',(req,res) =>{
 });
 
 // Ruta para la administración de usuarios
-app.get('/user-admin',(req,res) =>{
+app.get('/user-admin', (req, res) => {
 
     const isLoggedIn = req.session.isLoggedIn;
     const user = req.session.user;
@@ -714,7 +721,7 @@ app.get('/user-admin',(req,res) =>{
                     });
 
                 });
-                res.render('adminUser', { users: users, isSuperAdmin, isLoggedIn, user});
+                res.render('adminUser', { users: users, isSuperAdmin, isLoggedIn, user });
             };
 
         });
@@ -727,7 +734,7 @@ app.get('/user-admin',(req,res) =>{
 
 // Crea la página usuario
 app.get('/usuario', (req, res) => {
-    
+
     const isLoggedIn = req.session.isLoggedIn;
     const user = req.session.user;
     const isAdmin = req.session.isAdmin;
@@ -740,7 +747,7 @@ app.get('/usuario', (req, res) => {
 
         // Consulta modificada para obtener reseñas escritas por el usuario, incluyendo nombres de películas
         const reviewsQuery = `
-            SELECT mr.review, mr.rating, m.title AS movie_name
+            SELECT mr.review, mr.rating, m.title AS movie_name, m.movie_id as movie_id
             FROM movie_review mr
             JOIN movie m ON mr.movie_id = m.movie_id
             WHERE mr.user_id = ?;
@@ -783,6 +790,24 @@ app.get('/usuario', (req, res) => {
     }
 });
 
+// Ruta para borrar las reseñas de un usuario
+app.post('/delete-reviews/:user/:movie', (req, res) => {
+
+    const userId = req.params.user;
+    const movieId = req.params.movie;
+
+    const query = "DELETE FROM movie_review WHERE user_id = ? and movie_id = ?";
+
+    db.run(query, [userId, movieId], (err) => {
+        if (err) {
+            res.status(500).send('Error al borrar las reseñas.')
+        } else {
+            res.redirect('/usuario');
+        }
+    });
+
+});
+
 // Ruta para blanquear la contraseña a 123
 app.post('/user-admin/reset-pass/:id', (req, res) => {
 
@@ -820,7 +845,7 @@ app.post('/user-admin/change-username/:id', (req, res) => {
 
         db.run(query, [newUser, id], (err) => {
             console.log(err)
-            if(err != null && err.errno == 19){
+            if (err != null && err.errno == 19) {
                 res.status(409).send('Usuario ya utilizado.');
             } else if (err) {
                 res.status(500).send('Error al cambiar el usuario.')
