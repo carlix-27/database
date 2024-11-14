@@ -63,6 +63,7 @@ app.get('/buscar', (req, res) => {
     const actorsQuery = `
         SELECT DISTINCT person.person_id AS person_id, person.person_name AS person_name
         FROM person
+        INNER JOIN main.movie_cast ON person.person_id = movie_cast.person_id
         WHERE person_name LIKE ?
     `;
 
@@ -414,13 +415,6 @@ app.get('/actor/:id', (req, res) => {
         WHERE movie_cast.person_id = ?;
   `;
 
-    const actor_query = `
-        SELECT DISTINCT
-            person.person_name as actorName,
-        FROM person
-        WHERE person_id = ?;
-    `;
-
     // Ejecutar la consulta
     db.all(query, [actorId], (err, movies) => {
         if (err) {
@@ -439,9 +433,7 @@ app.get('/actor/:id', (req, res) => {
 // Ruta para que el usuario pueda dejar un review
 app.post('/pelicula/:id/review', (req, res) => {
     const movieId = req.params.id;
-    const userId = req.session.userId; // Para cualquier otro user
-    // const userId = 1; // Para admin
-
+    const userId = req.session.userId;
 
     const review = req.body.review;
     const rating = req.body.rating; // Viene el value asociado al req.body.rating en front el radio.
@@ -795,16 +787,22 @@ app.post('/delete-reviews/:user/:movie', (req, res) => {
 
     const userId = req.params.user;
     const movieId = req.params.movie;
+    const isLoggedIn = req.session.isLoggedIn;
 
-    const query = "DELETE FROM movie_review WHERE user_id = ? and movie_id = ?";
+    if (isLoggedIn) {
 
-    db.run(query, [userId, movieId], (err) => {
-        if (err) {
-            res.status(500).send('Error al borrar las reseñas.')
-        } else {
-            res.redirect('/usuario');
-        }
-    });
+        const query = "DELETE FROM movie_review WHERE user_id = ? and movie_id = ?";
+
+        db.run(query, [userId, movieId], (err) => {
+            if (err) {
+                res.status(500).send('Error al borrar las reseñas.')
+            } else {
+                res.redirect('/usuario');
+            }
+        });
+    } else {
+        res.redirect('/');
+    }
 
 });
 
