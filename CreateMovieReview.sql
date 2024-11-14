@@ -8,3 +8,6 @@ CREATE TABLE IF NOT EXISTS movie_review (
     FOREIGN KEY (movie_id) REFERENCES movie(movie_id),
     FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 );
+
+
+

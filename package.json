@@ -8,7 +8,8 @@
     "start": "nodemon app.js",
     "user": "sqlite3 movies.db < CreateUserTable.sql",
     "reviews": "sqlite3 movies.db < CreateMovieReview.sql",
-    "savedlist": "sqlite3 movies.db < CreateSavedList.sql"
+    "savedlist": "sqlite3 movies.db < CreateSavedList.sql",
+    "create_db": "npm run user && npm run reviews && npm run savedlist"
   },
   "keywords": [],
   "author": "",
