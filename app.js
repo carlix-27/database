@@ -32,16 +32,8 @@ app.use(session({
     cookie: { maxAge: 60000 * 60 * 24 }
 }));
 
-
 // Configurar el motor de plantillas EJS
 app.set('view engine', 'ejs');
-
-
-// app.put('/edit-user', ())
-
-// app.delete('/delete-user', ())
-
-
 
 // Ruta para la página de inicio
 app.get('/', (req, res) => {
@@ -205,16 +197,6 @@ app.get('/pelicula/:id', async (req, res) => {
         left join user on movie_review.user_id = user.id
         where movie.movie_id = ?;
     `;
-
-    /* if (isLoggedIn) {
-        const saved_query = `
-        SELECT fav 
-        FROM saved_list 
-        WHERE user_id = ? AND movie_id = ?
-    `;
-    } else {
-
-    } */
 
     const saved_query = `
         SELECT fav 
@@ -669,11 +651,13 @@ app.get('/log-out', (req, res) => {
 
 
 app.get('/forgot-password',(req,res) =>{
+    const isLoggedIn = req.session.isLoggedIn;
+    const user = req.session.user;
 
-    if(req.session.isLoggedIn){
+    if(isLoggedIn){
         res.redirect('/');
     } else {
-        res.render('forgotPassword');
+        res.render('forgotPassword', { isLoggedIn, user });
     }
 
 });
@@ -682,7 +666,7 @@ app.post('/change-password',(req,res) =>{
     
     const email = req.body.email;
     const pass  = req.body.pass
-    const query = "UPDATE user SET password = ? WHERE email == ?";
+    const query = "UPDATE user SET password = ? WHERE email = ?";
     console.log(email,pass)
     db.run(query,[pass,email],(err)=>{
 

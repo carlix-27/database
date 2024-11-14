@@ -13,24 +13,18 @@
         <div id="body">
             <h1>Iniciar sesión</h1>
             <form style="width: 40%;" action="/log-in" method="POST">
-                <input style="width: 60%;margin: 10px 0;" id="text" type="text" name="user" placeholder="Ingrese Usuario" />
-                <input style="width: 60%;margin: 10px 0;" id="text" type="password" name="password" placeholder="Ingrese Contraseña" />
+                <input style="width: 60%;margin: 10px 0;" id="text" type="text" name="user"
+                    placeholder="Ingrese Usuario" />
+                <input style="width: 60%;margin: 10px 0;" id="text" type="password" name="password"
+                    placeholder="Ingrese Contraseña" />
                 <button style="width: 60%;margin: 10px 0;" type="submit">Ingresar</button>
             </form>
 
-            <form style="width: 35%;" action="/" method="GET">
-                <button style="width: 40%;margin: 10px 0;" style="display: block;" type="submit">Recuperar contraseña</button>
+            <form style="width: 35%;" action="/forgot-password" method="GET">
+                <button style="width: 40%;margin: 10px 0;" style="display: block;" type="submit">Recuperar
+                    contraseña</button>
             </form>
         </div>
-<h1>MovieWeb</h1>
-<form action="/log-in" method="POST" >
-    <input type="user" name="user" placeholder="Ingrese Usuario" />
-    <input type="password" name="password" placeholder="Ingrese Contraseña" />
-    <button type="submit">Confirm</button>
-    
-</form>
-<form action="/forgot-password" method="GET">
-    <button type="submit">Forgot Password</button>
-</form>
 </body>
+
 </html>
