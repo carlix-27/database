@@ -80,12 +80,18 @@
                                             <p style="margin: 5px 0 0 10px;"><strong>Película:</strong>
                                                 <%= review.movie_name %>
                                             </p>
-                                            <p style="margin: 20px 0 20px 10px;"><strong>Calificación:</strong>
-                                                <%= review.rating %>
-                                            </p>
-                                            <p style="margin: 0 0 5px 10px;"><strong>Reseña:</strong>
-                                                <%= review.review %>
-                                            </p>
+                                            <% if (review.review != '') { %>
+                                                <p style="margin: 20px 0 20px 10px;"><strong>Calificación:</strong>
+                                                    <%= review.rating %>
+                                                </p>
+                                                <p style="margin: 0 0 5px 10px;"><strong>Reseña:</strong>
+                                                    <%= review.review %>
+                                                </p>
+                                                <% } else { %>
+                                                    <p style="margin: 20px 0 5px 10px;"><strong>Calificación:</strong>
+                                                        <%= review.rating %>
+                                                    </p>
+                                            <% } %>
                                         </li>
                                     </div>
                                     <% }) %>
